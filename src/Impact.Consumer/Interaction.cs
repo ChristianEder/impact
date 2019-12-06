@@ -42,14 +42,14 @@ namespace Impact.Consumer
         {
             var response = responseFactory(request);
 
-            var expectedResponse = responseFactory(this.request);
+            //var expectedResponse = responseFactory(this.request);
 
-            var checker = new MatchChecker(responseMatchers, false);
-            var matches = checker.Matches(expectedResponse, response);
-            if (!matches.Matches)
-            {
-                throw new Exception("Invalid interaction setup - the generated response does not match the expected format: " + matches.FailureReasons);
-            }
+            //var checker = new MatchChecker(responseMatchers, false);
+            //var matches = checker.Matches(expectedResponse, response);
+            //if (!matches.Matches)
+            //{
+            //    throw new Exception("Invalid interaction setup - the generated response does not match the expected format: " + matches.FailureReasons);
+            //}
 
             CallCount++;
 

@@ -24,20 +24,9 @@ namespace Impact.Consumer.Tests
         {
             var mockServer = PublishedPact.CreateMockServer();
 
-            Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } }));
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Bar" }));
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Baz", Ids = { "3", "4" } }));
         }
-
-        [Fact]
-        public void FailsOnUnexpectedResponses()
-        {
-            var mockServer = PublishedPact.CreateMockServer(r => new Response());
-
-            Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } }));
-            Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Bar", Ids = { "3", "4" } }));
-        }
-
 
         [Fact]
         public void PassesVerificationIfAllInteractionsWhereCalled()
