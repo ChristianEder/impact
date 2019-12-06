@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Impact.Consumer\Impact.Consumer.csproj" />
+    <ProjectReference Include="..\Impact.Tests.Shared\Impact.Tests.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
