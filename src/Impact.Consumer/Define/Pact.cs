@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Impact.Consumer.Serialize;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer
+namespace Impact.Consumer.Define
 {
-    public class MockServer
+    public class Pact
     {
         private readonly List<Interaction> interactions = new List<Interaction>();
 
@@ -19,7 +20,7 @@ namespace Impact.Consumer
             interactions.Add(interaction);
         }
 
-        public TResponse SendRequest<TRequest, TResponse>(TRequest request)
+        internal TResponse SendRequest<TRequest, TResponse>(TRequest request)
         {
             var matchingInteractions = interactions.Where(i => i.Matches(request)).ToArray();
             if (matchingInteractions.Length == 0)
@@ -32,10 +33,10 @@ namespace Impact.Consumer
                 throw new Exception("More than 1 matching interactions where found");
             }
 
-            return (TResponse) matchingInteractions.Single().Respond(request);
+            return (TResponse)matchingInteractions.Single().Respond(request);
         }
 
-        public void VerifyAllInteractionsWhereCalled()
+        internal void VerifyAllInteractionsWhereCalled()
         {
             if (interactions.Any(i => i.CallCount < 1))
             {

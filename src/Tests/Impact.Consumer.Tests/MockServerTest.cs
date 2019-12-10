@@ -1,4 +1,5 @@
 ﻿using System;
+using Impact.Consumer.Serve;
 using Impact.Tests.Shared;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void ReturnsExpectedResponses()
         {
-            var mockServer = PublishedPact.CreateMockServer();
+            var mockServer =  new MockServer(PublishedPact.DefinePact());
 
             var response = mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
 
@@ -22,7 +23,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void FailsOnUnexpectedRequests()
         {
-            var mockServer = PublishedPact.CreateMockServer();
+            var mockServer = new MockServer(PublishedPact.DefinePact());
 
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Bar" }));
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Baz", Ids = { "3", "4" } }));
@@ -31,7 +32,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void PassesVerificationIfAllInteractionsWhereCalled()
         {
-            var mockServer = PublishedPact.CreateMockServer();
+            var mockServer = new MockServer(PublishedPact.DefinePact());
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
             mockServer.SendRequest<Request, Response>(new Request { Type = "Bar", Ids = { "3", "4" } });
@@ -43,7 +44,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void FailsVerificationIfNotAllInteractionsWhereCalled()
         {
-            var mockServer = PublishedPact.CreateMockServer();
+            var mockServer = new MockServer(PublishedPact.DefinePact());
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
 

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer
+namespace Impact.Consumer.Serialize
 {
     public class JsonRequestResponseSerializer : IRequestResponseSerializer
     {

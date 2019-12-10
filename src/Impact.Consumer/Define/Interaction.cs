@@ -2,28 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Impact.Consumer.Serialize;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer
+namespace Impact.Consumer.Define
 {
     public class Interaction
     {
         private readonly string interactionDescription;
         private readonly string providerState;
-        private readonly MockServer mockServer;
+        private readonly Pact pact;
         private object request;
         private Func<object, object> responseFactory;
         private readonly List<IMatcher> responseMatchers = new List<IMatcher>();
         private readonly List<IMatcher> requestMatchers = new List<IMatcher>();
         public int CallCount { get; private set; }
 
-        public Interaction(string interactionDescription, string providerState, MockServer mockServer)
+        public Interaction(string interactionDescription, string providerState, Pact pact)
         {
             this.interactionDescription = interactionDescription;
             this.providerState = providerState;
-            this.mockServer = mockServer;
+            this.pact = pact;
         }
 
         public SpecifyRequestMachersOrResponse<T> With<T>(T request)
@@ -115,7 +116,7 @@ namespace Impact.Consumer
             public SpecifyResponseMachers<TResponse> WillRespondWith<TResponse>(Func<TRequest, TResponse> responseFactory)
             {
                 interaction.responseFactory = o => responseFactory((TRequest) o);
-                interaction.mockServer.Register(interaction);
+                interaction.pact.Register(interaction);
                 return new SpecifyResponseMachers<TResponse>(interaction);
             }
         }

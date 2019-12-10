@@ -1,17 +1,17 @@
-﻿namespace Impact.Consumer
+﻿namespace Impact.Consumer.Define
 {
     public class ProviderState
     {
         private string providerState;
-        private readonly MockServer mockServer;
+        private readonly Pact pact;
 
-        public ProviderState(string providerState, MockServer mockServer)
+        public ProviderState(string providerState, Pact pact)
         {
             this.providerState = providerState;
-            this.mockServer = mockServer;
+            this.pact = pact;
         }
 
-        public ProviderState Given(string providerState)
+        public ProviderState And(string providerState)
         {
             this.providerState += "&&" + providerState;
             return this;
@@ -19,7 +19,7 @@
 
         public Interaction UponReceiving(string interactionDescription)
         {
-            return new Interaction(interactionDescription, providerState, mockServer);
+            return new Interaction(interactionDescription, providerState, pact);
         }
     }
 }

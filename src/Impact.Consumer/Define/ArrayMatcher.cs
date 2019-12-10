@@ -1,7 +1,7 @@
 ﻿using System;
 using Impact.Core.Matchers;
 
-namespace Impact.Consumer
+namespace Impact.Consumer.Define
 {
     public class ArrayMatcher<TItem>
     {

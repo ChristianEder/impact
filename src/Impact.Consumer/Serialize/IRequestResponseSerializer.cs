@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer
+namespace Impact.Consumer.Serialize
 {
     public interface IRequestResponseSerializer
     {
