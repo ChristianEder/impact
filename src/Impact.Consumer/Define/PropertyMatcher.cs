@@ -36,7 +36,7 @@ namespace Impact.Consumer.Define
 
         public PropertyMatcher<TProperty> Regex(string regex)
         {
-            register(new RegexPropertyMatcher(regex, propertyPath));
+            register(new RegexPropertyMatcher(propertyPath, regex));
             return this;
         }
 

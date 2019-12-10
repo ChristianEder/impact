@@ -19,7 +19,7 @@ namespace Impact.Core
                     switch (matcher)
                     {
                         case "regex":
-                            matchers.Add(new RegexPropertyMatcher(rule["regex"].ToString(), ruleArray.Name.Replace("$.", string.Empty)));
+                            matchers.Add(new RegexPropertyMatcher(ruleArray.Name.Replace("$.", string.Empty), rule["regex"].ToString()));
                             break;
                         case "type":
 

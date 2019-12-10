@@ -5,6 +5,7 @@ namespace Impact.Core.Matchers
     public interface IMatcher
     {
         bool Matches(object expected, object actual);
+
         string PropertyPath { get; }
 
         JObject ToPactMatcher();

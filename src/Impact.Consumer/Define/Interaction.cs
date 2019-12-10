@@ -108,14 +108,9 @@ namespace Impact.Consumer.Define
                 return this;
             }
 
-            public SpecifyResponseMachers<TResponse> WillRespondWith<TResponse>(TResponse response)
-            {
-                return WillRespondWith(r => response);
-            }
-
             public SpecifyResponseMachers<TResponse> WillRespondWith<TResponse>(Func<TRequest, TResponse> responseFactory)
             {
-                interaction.responseFactory = o => responseFactory((TRequest) o);
+                interaction.responseFactory = o => responseFactory((TRequest)o);
                 interaction.pact.Register(interaction);
                 return new SpecifyResponseMachers<TResponse>(interaction);
             }

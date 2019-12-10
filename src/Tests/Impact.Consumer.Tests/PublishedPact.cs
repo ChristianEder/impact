@@ -19,12 +19,12 @@ namespace Impact.Consumer.Tests
 
             if (request.Type == "Foo")
             {
-                response.Foos.AddRange(request.Ids.Select(i => new Foo {Id = i, Size = i.Length}));
+                response.Foos.AddRange(request.Ids.Select(i => new Foo { Id = i, Size = i.Length }));
             }
 
             if (request.Type == "Bar")
             {
-                response.Bars.AddRange(request.Ids.Select(i => new Bar {Id = i, Name = "Bar: " + i}));
+                response.Bars.AddRange(request.Ids.Select(i => new Bar { Id = i, Name = "Bar: " + i }));
             }
 
             return response;

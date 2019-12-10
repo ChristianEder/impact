@@ -7,7 +7,7 @@ namespace Impact.Core.Matchers
     {
         private readonly Regex regex;
 
-        public RegexPropertyMatcher(string regex, string path)
+        public RegexPropertyMatcher(string path, string regex)
         {
             PropertyPath = path;
             this.regex = new Regex(regex, RegexOptions.Compiled);
@@ -35,7 +35,7 @@ namespace Impact.Core.Matchers
 
         public IMatcher Clone(string propertyPath)
         {
-            return new RegexPropertyMatcher(regex.ToString(), propertyPath);
+            return new RegexPropertyMatcher(propertyPath, regex.ToString());
         }
 
         public string FailureMessage(object expected, object actual)
