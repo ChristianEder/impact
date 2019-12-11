@@ -15,10 +15,5 @@ namespace Impact.Consumer.Serve
         {
             return pact.SendRequest<TRequest, TResponse>(request);
         }
-
-        public void VerifyAllInteractionsWhereCalled()
-        {
-           pact.VerifyAllInteractionsWhereCalled();
-        }
     }
 }

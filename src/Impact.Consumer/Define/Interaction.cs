@@ -36,7 +36,8 @@ namespace Impact.Consumer.Define
         internal bool Matches(object request)
         {
             var checker = new MatchChecker(requestMatchers, true);
-            return checker.Matches(this.request, request).Matches;
+            var matchCheckResult = checker.Matches(this.request, request);
+            return matchCheckResult.Matches;
         }
 
         internal object Respond(object request)

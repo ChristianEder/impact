@@ -36,7 +36,7 @@ namespace Impact.Consumer.Define
             return (TResponse)matchingInteractions.Single().Respond(request);
         }
 
-        internal void VerifyAllInteractionsWhereCalled()
+        public void VerifyAllInteractionsWhereCalled()
         {
             if (interactions.Any(i => i.CallCount < 1))
             {

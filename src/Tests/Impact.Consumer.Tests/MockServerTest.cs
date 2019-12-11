@@ -32,23 +32,25 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void PassesVerificationIfAllInteractionsWhereCalled()
         {
-            var mockServer = new MockServer(PublishedPact.DefinePact());
+            var pact = PublishedPact.DefinePact();
+            var mockServer = new MockServer(pact);
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
             mockServer.SendRequest<Request, Response>(new Request { Type = "Bar", Ids = { "3", "4" } });
 
-            mockServer.VerifyAllInteractionsWhereCalled();
+            pact.VerifyAllInteractionsWhereCalled();
         }
 
 
         [Fact]
         public void FailsVerificationIfNotAllInteractionsWhereCalled()
         {
-            var mockServer = new MockServer(PublishedPact.DefinePact());
+            var pact = PublishedPact.DefinePact();
+            var mockServer = new MockServer(pact);
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
 
-            Assert.ThrowsAny<Exception>(() => mockServer.VerifyAllInteractionsWhereCalled());
+            Assert.ThrowsAny<Exception>(() => pact.VerifyAllInteractionsWhereCalled());
         }
 
         [Fact]
