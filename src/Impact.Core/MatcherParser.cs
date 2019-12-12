@@ -11,15 +11,18 @@ namespace Impact.Core
         {
             List<IMatcher> matchers = new List<IMatcher>();
 
-            foreach (var ruleArray in rules.Properties())
+            foreach (var ruleOrRuleArray in rules.Properties())
             {
-                foreach (var rule in ruleArray.Value)
+                var ruleArray = ruleOrRuleArray.Value is JArray arr ? arr : new JArray(ruleOrRuleArray.Value);
+                var propertyPath = ruleOrRuleArray.Name;
+
+                foreach (var rule in ruleArray)
                 {
                     var matcher = rule["match"].ToString();
                     switch (matcher)
                     {
                         case "regex":
-                            matchers.Add(new RegexPropertyMatcher(ruleArray.Name.Replace("$.", string.Empty), rule["regex"].ToString()));
+                            matchers.Add(new RegexPropertyMatcher(propertyPath.Replace("$.", string.Empty), rule["regex"].ToString()));
                             break;
                         case "type":
 
@@ -27,15 +30,15 @@ namespace Impact.Core
                             var min = rule["min"];
                             if (max != null)
                             {
-                                matchers.Add(new TypeMaxPropertyMatcher(ruleArray.Name.Replace("$.", string.Empty), long.Parse(max.ToString())));
+                                matchers.Add(new TypeMaxPropertyMatcher(propertyPath.Replace("$.", string.Empty), long.Parse(max.ToString())));
                             }
                             else if (min != null)
                             {
-                                matchers.Add(new TypeMinPropertyMatcher(ruleArray.Name.Replace("$.", string.Empty), long.Parse(min.ToString())));
+                                matchers.Add(new TypeMinPropertyMatcher(propertyPath.Replace("$.", string.Empty), long.Parse(min.ToString())));
                             }
                             else
                             {
-                                matchers.Add(new TypePropertyMatcher(ruleArray.Name.Replace("$.", string.Empty)));
+                                matchers.Add(new TypePropertyMatcher(propertyPath.Replace("$.", string.Empty)));
                             }
 
                             break;

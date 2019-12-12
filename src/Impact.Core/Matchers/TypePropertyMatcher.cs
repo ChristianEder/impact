@@ -2,22 +2,18 @@
 
 namespace Impact.Core.Matchers
 {
-
-
-    public class TypePropertyMatcher : IMatcher
+    public class TypePropertyMatcher : Matcher
     {
-        public TypePropertyMatcher(string path)
+        public TypePropertyMatcher(string path) : base(path)
         {
-            PropertyPath = path;
         }
 
-        public bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual)
         {
             return expected.GetType() == actual.GetType();
         }
 
-        public string PropertyPath { get; }
-        public JObject ToPactMatcher()
+        public override JObject ToPactMatcher()
         {
             return new JObject
             {
@@ -25,12 +21,12 @@ namespace Impact.Core.Matchers
             };
         }
 
-        public IMatcher Clone(string propertyPath)
+        public override IMatcher Clone(string propertyPath)
         {
             return new TypePropertyMatcher(propertyPath);
         }
 
-        public string FailureMessage(object expected, object actual)
+        public override string FailureMessage(object expected, object actual)
         {
             if (expected.GetType() != actual.GetType())
             {

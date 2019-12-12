@@ -4,8 +4,13 @@ using System.Linq;
 
 namespace Impact.Core.Matchers
 {
-    public abstract class TypeCountMatcher
+    public abstract class TypeCountMatcher : Matcher
     {
+        protected TypeCountMatcher(string path) : base(path)
+        {
+            
+        }
+
         protected long? Count(object actual, bool roundUp)
         {
             if (actual is IEnumerable e)

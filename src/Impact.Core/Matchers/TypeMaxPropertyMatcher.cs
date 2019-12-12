@@ -2,17 +2,16 @@
 
 namespace Impact.Core.Matchers
 {
-    public class TypeMaxPropertyMatcher : TypeCountMatcher, IMatcher
+    public class TypeMaxPropertyMatcher : TypeCountMatcher
     {
         private readonly long max;
 
-        public TypeMaxPropertyMatcher(string path, long max)
+        public TypeMaxPropertyMatcher(string path, long max) : base(path)
         {
             this.max = max;
-            PropertyPath = path;
         }
 
-        public bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual)
         {
             if (expected.GetType() != actual.GetType())
             {
@@ -23,10 +22,8 @@ namespace Impact.Core.Matchers
 
             return !count.HasValue || count.Value <= max;
         }
-
-        public string PropertyPath { get; }
-
-        public JObject ToPactMatcher()
+        
+        public override JObject ToPactMatcher()
         {
             return new JObject
             {
@@ -35,12 +32,12 @@ namespace Impact.Core.Matchers
             };
         }
 
-        public IMatcher Clone(string propertyPath)
+        public override IMatcher Clone(string propertyPath)
         {
             return new TypeMaxPropertyMatcher(propertyPath, max);
         }
 
-        public string FailureMessage(object expected, object actual)
+        public override string FailureMessage(object expected, object actual)
         {
             if (expected.GetType() != actual.GetType())
             {

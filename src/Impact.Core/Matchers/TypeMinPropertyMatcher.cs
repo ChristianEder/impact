@@ -2,17 +2,16 @@
 
 namespace Impact.Core.Matchers
 {
-    public class TypeMinPropertyMatcher : TypeCountMatcher, IMatcher
+    public class TypeMinPropertyMatcher : TypeCountMatcher
     {
         private readonly long min;
 
-        public TypeMinPropertyMatcher(string path, long min)
+        public TypeMinPropertyMatcher(string path, long min) : base(path)
         {
             this.min = min;
-            PropertyPath = path;
         }
 
-        public bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual)
         {
             if (expected.GetType() != actual.GetType())
             {
@@ -23,10 +22,8 @@ namespace Impact.Core.Matchers
 
             return !count.HasValue || count.Value >= min;
         }
-
-        public string PropertyPath { get; }
-
-        public JObject ToPactMatcher()
+        
+        public override JObject ToPactMatcher()
         {
             return new JObject
             {
@@ -35,12 +32,12 @@ namespace Impact.Core.Matchers
             };
         }
 
-        public IMatcher Clone(string propertyPath)
+        public override IMatcher Clone(string propertyPath)
         {
             return new TypeMaxPropertyMatcher(propertyPath, min);
         }
 
-        public string FailureMessage(object expected, object actual)
+        public override string FailureMessage(object expected, object actual)
         {
             if (expected.GetType() != actual.GetType())
             {

@@ -3,17 +3,16 @@ using Newtonsoft.Json.Linq;
 
 namespace Impact.Core.Matchers
 {
-    public class RegexPropertyMatcher : IMatcher
+    public class RegexPropertyMatcher : Matcher
     {
         private readonly Regex regex;
 
-        public RegexPropertyMatcher(string path, string regex)
+        public RegexPropertyMatcher(string path, string regex) : base(path)
         {
-            PropertyPath = path;
             this.regex = new Regex(regex, RegexOptions.Compiled);
         }
 
-        public bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual)
         {
             if (ReferenceEquals(actual, null))
             {
@@ -23,8 +22,7 @@ namespace Impact.Core.Matchers
             return regex.IsMatch(actual.ToString());
         }
 
-        public string PropertyPath { get; }
-        public JObject ToPactMatcher()
+        public override JObject ToPactMatcher()
         {
             return new JObject
             {
@@ -33,12 +31,12 @@ namespace Impact.Core.Matchers
             };
         }
 
-        public IMatcher Clone(string propertyPath)
+        public override IMatcher Clone(string propertyPath)
         {
             return new RegexPropertyMatcher(propertyPath, regex.ToString());
         }
 
-        public string FailureMessage(object expected, object actual)
+        public override string FailureMessage(object expected, object actual)
         {
             return $"Expected regex format {regex}, but got {actual}";
         }

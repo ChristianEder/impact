@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Impact.Core.Matchers;
 
 namespace Impact.Core
 {
@@ -6,12 +8,12 @@ namespace Impact.Core
     {
         public bool Matches { get; private set; } = true;
 
-        public string FailureReasons { get; private set; } = String.Empty;
+        public string FailureReasons { get; private set; } = string.Empty;
 
-        public void AddFailure(string propertyPath, string reason)
+        public void AddFailure(IEnumerable<IPropertyPathPart> propertyPath, string reason)
         {
             Matches = false;
-            reason = $"$.{propertyPath}: {reason}";
+            reason = $"$.{string.Join(".", propertyPath)}: {reason}";
             FailureReasons = string.IsNullOrEmpty(FailureReasons)
                 ? reason
                 : (FailureReasons + Environment.NewLine + reason);

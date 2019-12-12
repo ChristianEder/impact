@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Impact.Core.Matchers
 {
@@ -8,10 +9,14 @@ namespace Impact.Core.Matchers
 
         string PropertyPath { get; }
 
+        IPropertyPathPart[] PropertyPathParts { get; }
+
         JObject ToPactMatcher();
 
         IMatcher Clone(string propertyPath);
 
         string FailureMessage(object expected, object actual);
+
+        bool AppliesTo(List<IPropertyPathPart> propertyPath);
     }
 }

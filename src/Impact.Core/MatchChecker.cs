@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Impact.Core.Matchers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Impact.Core
 {
@@ -21,72 +21,90 @@ namespace Impact.Core
         public MatchCheckResult Matches(object expected, object actual)
         {
             var result = new MatchCheckResult();
-            Matches(expected, actual, "", result, matchers);
+            AddFailures(ToJToken(expected), ToJToken(actual), new List<IPropertyPathPart>(), isRequest, result, matchers);
             return result;
         }
 
-        private void Matches(object expected, object actual, string propertyPath, MatchCheckResult result, IMatcher[] matchers)
+        private static void AddFailures(JToken expected, JToken actual, List<IPropertyPathPart> propertyPath, bool isRequest, MatchCheckResult result, IMatcher[] allMatchers)
         {
-            var matchersForProperty = matchers.Where(m => m.PropertyPath == propertyPath).ToArray();
-           
-            if (ReferenceEquals(null, expected) && ReferenceEquals(null, actual))
+            if (AddFailuresForNull(expected, actual, propertyPath, result, isRequest))
             {
                 return;
             }
 
-            if (ReferenceEquals(null, expected))
+            if (expected.GetType() != actual.GetType())
             {
-                result.AddFailure(propertyPath, "expected null value");
+                result.AddFailure(propertyPath, "types do not match");
                 return;
             }
 
-            if (ReferenceEquals(null, actual))
-            {
-                result.AddFailure(propertyPath, "expected not null value, got null");
-                return;
-            }
+            var matchersForProperty = allMatchers.Where(m => m.AppliesTo(propertyPath)).ToArray();
 
-            if (IsSimpleType(actual))
+            switch (expected)
             {
-                if (matchersForProperty.Any())
-                {
-                    AddFailures(expected, actual, matchersForProperty, result);
-                }
-                else
-                {
-                    if (!Equals(expected, actual))
-                    {
-                        var expectedIsEmpty = expected is string s && string.IsNullOrEmpty(s);
-                        var postelsLawAllowsAdditionalProperties = !isRequest && expectedIsEmpty;
-                        if (!postelsLawAllowsAdditionalProperties)
-                        {
-                            result.AddFailure(propertyPath, $"Expected {expected}, but got {actual}");
-                        }
-                    }
-                }
-                return;
-            }
-
-            AddFailures(expected, actual, matchersForProperty, result);
-
-           
-            if (actual is IEnumerable enumerable)
-            {
-                MatchesCollection(expected, propertyPath, result, matchers, matchersForProperty, enumerable);
-                return;
-            }
-
-            var propertyInfos = actual.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var propertyInfo in propertyInfos)
-            {
-                Matches(propertyInfo.GetValue(expected), propertyInfo.GetValue(actual), propertyPath.Length > 0 ? (propertyPath + "." + propertyInfo.Name) : propertyInfo.Name, result, matchers);
+                case JValue expectedValue:
+                    AddFailuresForValue(expectedValue, (JValue)actual, propertyPath, result, matchersForProperty);
+                    break;
+                case JObject expectedObject:
+                    AddFailuresForObject(expectedObject, (JObject)actual, propertyPath, isRequest, result, allMatchers);
+                    break;
+                case JArray expectedArray:
+                    AddFailuresForArray(expectedArray, (JArray)actual, propertyPath, isRequest, result, allMatchers, matchersForProperty);
+                    break;
+                default:
+                    result.AddFailure(propertyPath, "unknown type found: " + expected.GetType().Name);
+                    break;
             }
         }
 
-        private void MatchesCollection(object expected, string propertyPath, MatchCheckResult result, IMatcher[] matchers, IMatcher[] matchersForProperty, IEnumerable enumerable)
+        private static void AddFailuresForValue(JValue expected, JValue actual, List<IPropertyPathPart> propertyPath, MatchCheckResult result, IMatcher[] matchersForProperty)
         {
-            var actualItems = enumerable.Cast<object>().ToArray();
-            var expectedItems = (expected as IEnumerable).Cast<object>().ToArray();
+            if (actual.Equals(expected))
+            {
+                return;
+            }
+
+            if (matchersForProperty.Any())
+            {
+                AddFailures(expected.Value, actual.Value, matchersForProperty, result);
+            }
+            else
+            {
+                result.AddFailure(propertyPath, $"Expected {expected.Value}, but got {actual.Value}");
+            }
+        }
+
+        private static void AddFailuresForObject(JObject expected, JObject actual, List<IPropertyPathPart> propertyPath, bool isRequest, MatchCheckResult result, IMatcher[] allMatchers)
+        {
+            var allProperties = expected.Properties().Union(actual.Properties()).Select(p => p.Name).Distinct().ToArray();
+
+            foreach (var property in allProperties)
+            {
+                var expectedProperty = expected.Property(property);
+                var actualProperty = actual.Property(property);
+
+                var childPropertyPath = new List<IPropertyPathPart>(propertyPath) { new PropertyPathPart(property) };
+
+                if (expectedProperty != null && actualProperty == null)
+                {
+                    result.AddFailure(childPropertyPath, "expected not null value, got null");
+                    continue;
+                }
+
+                if (actualProperty != null && expectedProperty == null && isRequest)
+                {
+                    result.AddFailure(propertyPath, "expected null value");
+                    continue;
+                }
+
+                AddFailures(expectedProperty.Value, actualProperty.Value, childPropertyPath, isRequest, result, allMatchers);
+            }
+        }
+
+        private static void AddFailuresForArray(JArray expected, JArray actual, List<IPropertyPathPart> propertyPath, bool isRequest, MatchCheckResult result, IMatcher[] allMatchers, IMatcher[] matchersForProperty)
+        {
+            var expectedItems = expected.ToArray();
+            var actualItems = actual.ToArray();
 
             var hasLengthMatchers = matchersForProperty.Any(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher);
 
@@ -103,25 +121,44 @@ namespace Impact.Core
             {
                 var actualItem = actualItems[i];
                 var expectedItem = expectedItems[i];
-                var arrayPropertyPath = propertyPath + "[*]";
                 var arrayIndexPropertyPath = $"{propertyPath}[{i}]";
 
-                var matchersToExpand = matchers.Where(m => m.PropertyPath.StartsWith(arrayPropertyPath)).ToArray();
-                var expandedMatchers = matchers.Except(matchersToExpand)
-                    .Concat(matchersToExpand.Select(m => m.Clone(m.PropertyPath.Replace(arrayPropertyPath, arrayIndexPropertyPath))))
-                    .ToArray();
+                var itemPath = new List<IPropertyPathPart>(propertyPath);
+                itemPath.RemoveAt(itemPath.Count-1);
+                itemPath.Add(new ArrayPropertyPathPart(propertyPath.Last().Value + $"[{i}]"));
+               
 
-                Matches(expectedItem, actualItem, arrayIndexPropertyPath, result, expandedMatchers);
+                AddFailures(expectedItem, actualItem, itemPath, isRequest, result, allMatchers);
             }
         }
 
-        private static bool IsSimpleType(object actual)
+        private static bool AddFailuresForNull(JToken expected, JToken actual, List<IPropertyPathPart> propertyPath, MatchCheckResult result, bool isRequest)
         {
-            return actual is string ||
-            actual is bool ||
-            actual is double ||
-            actual is int ||
-            actual is long;
+            var nullValue = JValue.CreateNull();
+
+            var expectedIsNull = nullValue.Equals(expected);
+            var actualIsNull = nullValue.Equals(actual);
+
+            if (expectedIsNull && actualIsNull)
+            {
+                // Both are null, this is fine
+                return true;
+            }
+
+            if (expectedIsNull && isRequest)
+            {
+                // expected is null, but actual ha a value. According to Postels Law, this is only allowed for responses.
+                result.AddFailure(propertyPath, "expected null value");
+                return true;
+            }
+
+            if (actualIsNull)
+            {
+                result.AddFailure(propertyPath, "expected not null value, got null");
+                return true;
+            }
+
+            return false;
         }
 
         private static void AddFailures(object expected, object actual, IMatcher[] matchers, MatchCheckResult result)
@@ -129,8 +166,13 @@ namespace Impact.Core
             var failingMatchers = matchers.Where(m => !m.Matches(expected, actual)).ToArray();
             foreach (var failingMatcher in failingMatchers)
             {
-                result.AddFailure(failingMatcher.PropertyPath, failingMatcher.FailureMessage(expected, actual));
+                result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));
             }
+        }
+
+        private JToken ToJToken(object o)
+        {
+            return JToken.Parse(JsonConvert.SerializeObject(o));
         }
     }
 }
