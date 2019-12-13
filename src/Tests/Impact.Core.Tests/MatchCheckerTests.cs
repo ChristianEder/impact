@@ -16,10 +16,19 @@ namespace Impact.Core.Tests
         public void V2Specs(string name, bool isRequest, JObject testCase)
         {
             var shouldMatch = (bool) testCase["match"];
-            var actual = JsonConvert.DeserializeObject(testCase["actual"].ToString());
-            var expected = JsonConvert.DeserializeObject(testCase["expected"].ToString());
+            var actual = testCase["actual"];
+            var expected = testCase["expected"];
 
-            var matchChecker = new MatchChecker(new List<IMatcher>(), isRequest);
+            Assert.Null(actual["matchingRules"]);
+            var rulesJsonProperty = expected["matchingRules"];
+            var rules = new IMatcher[0];
+            if (rulesJsonProperty != null)
+            {
+                rules = MatcherParser.Parse(rulesJsonProperty as JObject);
+                ((JObject)expected).Remove("matchingRules");
+            }
+
+            var matchChecker = new MatchChecker(rules, isRequest);
             var result = matchChecker.Matches(expected, actual);
 
             if (shouldMatch)
@@ -37,7 +46,7 @@ namespace Impact.Core.Tests
             get
             {
                 var testCaseDir = Path.Combine(Directory.GetCurrentDirectory(), "testcases", "v2");
-                var testCases = Directory.GetFiles(testCaseDir, "*.json", SearchOption.AllDirectories);
+                var testCases = Directory.GetFiles(testCaseDir, "*.json", SearchOption.AllDirectories).Where(f => !new FileInfo(f).Name.ToLower().Contains("xml"));
                 return testCases.Select(f =>
                 {
                     var name = string.Join(" ",

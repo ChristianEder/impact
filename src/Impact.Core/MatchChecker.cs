@@ -106,27 +106,25 @@ namespace Impact.Core
             var expectedItems = expected.ToArray();
             var actualItems = actual.ToArray();
 
-            var hasLengthMatchers = matchersForProperty.Any(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher);
+            var lengthMatchers = matchersForProperty.Where(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher).ToArray();
 
-            if (!hasLengthMatchers && actualItems.Length != expectedItems.Length)
+            if (!lengthMatchers.Any() && actualItems.Length != expectedItems.Length && isRequest)
             {
-                if (isRequest)
-                {
-                    // Postel's law: Accept more actuals than expecteds for responses, but fail on requests
-                    result.AddFailure(propertyPath, $"Expected {expectedItems.Length} elements, but got {actualItems.Length}");
-                }
+                // Postel's law: Accept more actuals than expecteds for responses, but fail on requests
+                result.AddFailure(propertyPath, $"Expected {expectedItems.Length} elements, but got {actualItems.Length}");
+            }
+
+            if (lengthMatchers.Any())
+            {
+                AddFailures(expectedItems, actualItems, lengthMatchers, result);
             }
 
             for (int i = 0; i < Math.Min(actualItems.Length, expectedItems.Length); i++)
             {
                 var actualItem = actualItems[i];
                 var expectedItem = expectedItems[i];
-                var arrayIndexPropertyPath = $"{propertyPath}[{i}]";
 
-                var itemPath = new List<IPropertyPathPart>(propertyPath);
-                itemPath.RemoveAt(itemPath.Count-1);
-                itemPath.Add(new ArrayPropertyPathPart(propertyPath.Last().Value + $"[{i}]"));
-               
+                var itemPath = new List<IPropertyPathPart>(propertyPath) { new ArrayIndexPathPart(i.ToString()) };
 
                 AddFailures(expectedItem, actualItem, itemPath, isRequest, result, allMatchers);
             }

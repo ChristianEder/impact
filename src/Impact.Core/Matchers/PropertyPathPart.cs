@@ -9,9 +9,20 @@
 
         public bool Equals(IPropertyPathPart other)
         {
-            return Value == other?.Value || Value == "*" || other?.Value == "*";
+            var otherProperty = other as PropertyPathPart;
+            if (ReferenceEquals(otherProperty, null))
+            {
+                return false;
+            }
+
+            return Value == otherProperty?.Value || Value == "*" || otherProperty?.Value == "*";
         }
 
         public string Value { get; }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

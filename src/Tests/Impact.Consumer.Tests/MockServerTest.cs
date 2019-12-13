@@ -16,7 +16,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void Xlkjsdlf()
         {
-            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\array with at least one element matching by example.json"));
+            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\array size less than required.json"));
 
 
             var expected = (JObject)testCase["expected"];
@@ -36,7 +36,6 @@ namespace Impact.Consumer.Tests
             }
 
             var m = new MatchChecker(rules, false);
-
 
             var result = m.Matches(expected, testCase["actual"]);
         }
