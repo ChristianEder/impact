@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Impact.Core.Matchers;
 using Newtonsoft.Json;
@@ -9,122 +8,107 @@ namespace Impact.Core
 {
     public class MatchChecker
     {
-        private readonly bool isRequest;
-        private readonly IMatcher[] matchers;
-
-        public MatchChecker(IEnumerable<IMatcher> matchers, bool isRequest)
+        public void Matches(object expected, object actual, MatchingContext context)
         {
-            this.isRequest = isRequest;
-            this.matchers = matchers.ToArray();
+            AddFailures(ToJToken(expected), ToJToken(actual), context);
         }
 
-        public MatchCheckResult Matches(object expected, object actual)
+        private static void AddFailures(JToken expected, JToken actual, MatchingContext context)
         {
-            var result = new MatchCheckResult();
-            AddFailures(ToJToken(expected), ToJToken(actual), new List<IPropertyPathPart>(), isRequest, result, matchers);
-            return result;
-        }
-
-        private static void AddFailures(JToken expected, JToken actual, List<IPropertyPathPart> propertyPath, bool isRequest, MatchCheckResult result, IMatcher[] allMatchers, bool onlyMatchers = false)
-        {
-            if (!onlyMatchers && AddFailuresForNull(expected, actual, propertyPath, result, isRequest))
+            if (!context.IgnoreExpected && AddFailuresForNull(expected, actual, context))
             {
                 return;
             }
 
-            if (!onlyMatchers && expected.GetType() != actual.GetType())
+            if (!context.IgnoreExpected && expected.GetType() != actual.GetType())
             {
-                result.AddFailure(propertyPath, "types do not match");
+                context.Result.AddFailure(context.PropertyPath, "types do not match");
                 return;
             }
-
-            var matchersForProperty = allMatchers.Where(m => m.AppliesTo(propertyPath)).ToArray();
 
             switch (actual)
             {
                 case JValue actualValue:
-                    AddFailuresForValue((JValue)expected, actualValue, propertyPath, result, matchersForProperty, onlyMatchers);
+                    AddFailuresForValue((JValue)expected, actualValue, context);
                     break;
                 case JObject actualObject:
-                    AddFailuresForObject((JObject)expected, actualObject, propertyPath, isRequest, result, allMatchers, onlyMatchers);
+                    AddFailuresForObject((JObject)expected, actualObject, context);
                     break;
                 case JArray actualArray:
-                    AddFailuresForArray((JArray)expected, actualArray, propertyPath, isRequest, result, allMatchers, matchersForProperty, onlyMatchers);
+                    AddFailuresForArray((JArray)expected, actualArray, context);
                     break;
                 default:
-                    result.AddFailure(propertyPath, "unknown type found: " + actual.GetType().Name);
+                    context.Result.AddFailure(context.PropertyPath, "unknown type found: " + actual.GetType().Name);
                     break;
             }
         }
 
-        private static void AddFailuresForValue(JValue expected, JValue actual, List<IPropertyPathPart> propertyPath,
-            MatchCheckResult result, IMatcher[] matchersForProperty, bool onlyMatchers)
+        private static void AddFailuresForValue(JValue expected, JValue actual, MatchingContext context)
         {
             if (actual.Equals(expected))
             {
                 return;
             }
 
-            if (matchersForProperty.Any())
+            if (context.MatchersForProperty.Any())
             {
-                AddFailures(expected.Value, actual.Value, matchersForProperty, result);
+                AddFailures(expected.Value, actual.Value, context.MatchersForProperty, context.Result);
             }
-            else if (!onlyMatchers)
+            else if (!context.IgnoreExpected)
             {
-                result.AddFailure(propertyPath, $"Expected {expected.Value}, but got {actual.Value}");
+                context.Result.AddFailure(context.PropertyPath, $"Expected {expected.Value}, but got {actual.Value}");
             }
         }
 
-        private static void AddFailuresForObject(JObject expected, JObject actual, List<IPropertyPathPart> propertyPath,
-            bool isRequest, MatchCheckResult result, IMatcher[] allMatchers, bool onlyMatchers)
+        private static void AddFailuresForObject(JObject expected, JObject actual, MatchingContext context)
         {
             var allProperties = expected.Properties().Union(actual.Properties()).Select(p => p.Name).Distinct().ToArray();
 
             foreach (var property in allProperties)
             {
+                var childContext = context.For(new PropertyPathPart(property));
+
                 var expectedProperty = expected.Property(property);
                 var actualProperty = actual.Property(property);
 
-                var childPropertyPath = new List<IPropertyPathPart>(propertyPath) { new PropertyPathPart(property) };
-
-                if (!onlyMatchers)
+                if (!context.IgnoreExpected)
                 {
-                    if (expectedProperty != null && actualProperty == null)
+                    var nullValue = JValue.CreateNull();
+
+                    if (actualProperty == null && expectedProperty != null && !expectedProperty.Value.Equals(nullValue))
                     {
-                        result.AddFailure(childPropertyPath, "expected not null value, got null");
+                        childContext.Result.AddFailure(childContext.PropertyPath, "expected not null value, got null");
                         continue;
                     }
 
-                    if (actualProperty != null && expectedProperty == null && isRequest)
+                    if (expectedProperty == null && actualProperty != null && !actualProperty.Value.Equals(nullValue) && childContext.IsRequest)
                     {
-                        result.AddFailure(propertyPath, "expected null value");
+                        childContext.Result.AddFailure(childContext.PropertyPath, "expected null value");
                         continue;
                     }
                 }
 
-                AddFailures(expectedProperty.Value, actualProperty.Value, childPropertyPath, isRequest, result, allMatchers, onlyMatchers);
+                AddFailures(expectedProperty.Value, actualProperty.Value, childContext);
             }
         }
 
-        private static void AddFailuresForArray(JArray expected, JArray actual, List<IPropertyPathPart> propertyPath,
-            bool isRequest, MatchCheckResult result, IMatcher[] allMatchers, IMatcher[] matchersForProperty,
-            bool onlyMatchers)
+        private static void AddFailuresForArray(JArray expected, JArray actual, MatchingContext context)
         {
             var expectedItems = expected.ToArray();
             var actualItems = actual.ToArray();
 
-            var lengthMatchers = matchersForProperty.Where(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher).ToArray();
+            var lengthMatchers = context.MatchersForProperty.Where(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher).ToArray();
 
-            if (!lengthMatchers.Any() && !onlyMatchers && (actualItems.Length < expectedItems.Length || actualItems.Length > expectedItems.Length && isRequest))
+            if (!lengthMatchers.Any() && !context.IgnoreExpected && (actualItems.Length < expectedItems.Length || actualItems.Length > expectedItems.Length && context.IsRequest))
             {
                 // Postel's law: Accept more actuals than expecteds for responses, but fail on requests. Never accept less than expected.
                 // The presence of length matchers indicates that the user wants to override this behaviour.
-                result.AddFailure(propertyPath, $"Expected {expectedItems.Length} elements, but got {actualItems.Length}");
+                context.Result.AddFailure(context.PropertyPath, $"Expected {expectedItems.Length} elements, but got {actualItems.Length}");
             }
 
             if (lengthMatchers.Any())
             {
-                AddFailures(expectedItems, actualItems, lengthMatchers, result);
+                AddFailures(expectedItems, actualItems, lengthMatchers, context.Result);
             }
 
             for (int i = 0; i < Math.Min(actualItems.Length, expectedItems.Length); i++)
@@ -132,9 +116,7 @@ namespace Impact.Core
                 var actualItem = actualItems[i];
                 var expectedItem = expectedItems[i];
 
-                var itemPath = new List<IPropertyPathPart>(propertyPath) { new ArrayIndexPathPart(i.ToString()) };
-
-                AddFailures(expectedItem, actualItem, itemPath, isRequest, result, allMatchers, onlyMatchers);
+                AddFailures(expectedItem, actualItem, context.For(new ArrayIndexPathPart(i.ToString())));
             }
 
             if (actual.Count > expected.Count)
@@ -142,14 +124,13 @@ namespace Impact.Core
                 for (var i = expected.Count; i < actual.Count; i++)
                 {
                     var actualItem = actualItems[i];
-                    var itemPath = new List<IPropertyPathPart>(propertyPath) { new ArrayIndexPathPart(i.ToString()) };
 
-                    AddFailures(expectedItems.Last(), actualItem, itemPath, isRequest, result, allMatchers, onlyMatchers: true);
+                    AddFailures(expectedItems.Last(), actualItem, context.For(new ArrayIndexPathPart(i.ToString()), ignoreExpected: true));
                 }
             }
         }
 
-        private static bool AddFailuresForNull(JToken expected, JToken actual, List<IPropertyPathPart> propertyPath, MatchCheckResult result, bool isRequest)
+        private static bool AddFailuresForNull(JToken expected, JToken actual, MatchingContext context)
         {
             var nullValue = JValue.CreateNull();
 
@@ -162,16 +143,16 @@ namespace Impact.Core
                 return true;
             }
 
-            if (expectedIsNull && isRequest)
+            if (expectedIsNull && context.IsRequest)
             {
                 // expected is null, but actual ha a value. According to Postels Law, this is only allowed for responses.
-                result.AddFailure(propertyPath, "expected null value");
+                context.Result.AddFailure(context.PropertyPath, "expected null value");
                 return true;
             }
 
             if (actualIsNull)
             {
-                result.AddFailure(propertyPath, "expected not null value, got null");
+                context.Result.AddFailure(context.PropertyPath, "expected not null value, got null");
                 return true;
             }
 

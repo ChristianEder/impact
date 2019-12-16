@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Impact.Consumer.Serve;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Impact.Tests.Shared;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -16,8 +14,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void Xlkjsdlf()
         {
-            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\array with at least one element not matching example type.json"));
-
+            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\empty body no content type.json"));
 
             var expected = (JObject)testCase["expected"];
             var rulesJsonProperty = expected["matchingRules"];
@@ -35,9 +32,9 @@ namespace Impact.Consumer.Tests
                 expected.Remove("matchingRules");
             }
 
-            var m = new MatchChecker(rules, false);
-
-            var result = m.Matches(expected, testCase["actual"]);
+            var c = new MatchingContext(rules, true);
+            var m = new MatchChecker();
+            m.Matches(expected, testCase["actual"], c);
         }
 
         [Fact]

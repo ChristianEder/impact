@@ -23,7 +23,15 @@ namespace Impact.Core.Matchers
             var name = part.Substring(0, open);
 
             yield return new PropertyPathPart(name);
-            yield return new ArrayIndexPathPart(index);
+
+            if (index.StartsWith("'") && index.EndsWith("'"))
+            {
+                yield return new PropertyPathPart(index.Trim('\''));
+            }
+            else
+            {
+                yield return new ArrayIndexPathPart(index);
+            }
         }
 
         public abstract bool Matches(object expected, object actual);
@@ -39,7 +47,7 @@ namespace Impact.Core.Matchers
         public abstract string FailureMessage(object expected, object actual);
         public bool AppliesTo(List<IPropertyPathPart> propertyPath)
         {
-            if (propertyPath.Count != PropertyPathParts.Length)
+            if (propertyPath.Count() != PropertyPathParts.Length)
             {
                 return false;
             }

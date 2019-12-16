@@ -28,16 +28,17 @@ namespace Impact.Core.Tests
                 ((JObject)expected).Remove("matchingRules");
             }
 
-            var matchChecker = new MatchChecker(rules, isRequest);
-            var result = matchChecker.Matches(expected, actual);
+            var context = new MatchingContext(rules, isRequest);
+            var matchChecker = new MatchChecker();
+            matchChecker.Matches(expected, actual, context);
 
             if (shouldMatch)
             {
-                Assert.True(result.Matches, name + ": " + result.FailureReasons);
+                Assert.True(context.Result.Matches, name + ": " + context.Result.FailureReasons);
             }
             else
             {
-                Assert.False(result.Matches, name + ": did match although it shouldn't");
+                Assert.False(context.Result.Matches, name + ": did match although it shouldn't");
             }
         }
 

@@ -26,11 +26,12 @@ namespace Impact.Provider
         public InteractionVerificationResult Honour(Func<object, object> sendRequest)
         {
             var actualResponse = sendRequest(request);
-            var checker = new MatchChecker(matchers, false);
+            var context = new MatchingContext(matchers, false);
+            var checker = new MatchChecker();
 
-            var matches = checker.Matches(response, actualResponse);
+            checker.Matches(response, actualResponse, context);
 
-            return new InteractionVerificationResult(description, matches.Matches, matches.FailureReasons);
+            return new InteractionVerificationResult(description, context.Result.Matches, context.Result.FailureReasons);
 
         }
     }

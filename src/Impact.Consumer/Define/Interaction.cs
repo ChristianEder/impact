@@ -35,23 +35,25 @@ namespace Impact.Consumer.Define
         
         internal bool Matches(object request)
         {
-            var checker = new MatchChecker(requestMatchers, true);
-            var matchCheckResult = checker.Matches(this.request, request);
-            return matchCheckResult.Matches;
+            var context = new MatchingContext(requestMatchers.ToArray(), true);
+            var checker = new MatchChecker();
+            checker.Matches(this.request, request, context);
+            return context.Result.Matches;
         }
 
         internal object Respond(object request)
         {
             var response = responseFactory(request);
 
-            //var expectedResponse = responseFactory(this.request);
+            var expectedResponse = responseFactory(this.request);
 
-            //var checker = new MatchChecker(responseMatchers, false);
-            //var matches = checker.Matches(expectedResponse, response);
-            //if (!matches.Matches)
-            //{
-            //    throw new Exception("Invalid interaction setup - the generated response does not match the expected format: " + matches.FailureReasons);
-            //}
+            var context = new MatchingContext(requestMatchers.ToArray(), false);
+            var checker = new MatchChecker();
+            checker.Matches(expectedResponse, response, context);
+            if (!context.Result.Matches)
+            {
+                throw new Exception("Invalid interaction setup - the generated response does not match the expected format: " + context.Result.FailureReasons);
+            }
 
             CallCount++;
 
