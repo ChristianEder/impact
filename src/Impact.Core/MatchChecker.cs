@@ -10,11 +10,16 @@ namespace Impact.Core
     {
         public void Matches(object expected, object actual, MatchingContext context)
         {
-            AddFailures(ToJToken(expected), ToJToken(actual), context);
+            AddFailures(JToken.FromObject(expected), JToken.FromObject(actual), context);
         }
 
         private static void AddFailures(JToken expected, JToken actual, MatchingContext context)
         {
+            if (context.TerminationRequested)
+            {
+                return;
+            }
+
             if (!context.IgnoreExpected && AddFailuresForNull(expected, actual, context))
             {
                 return;
@@ -52,7 +57,7 @@ namespace Impact.Core
 
             if (context.MatchersForProperty.Any())
             {
-                AddFailures(expected.Value, actual.Value, context.MatchersForProperty, context.Result);
+                AddFailures(expected.Value, actual.Value, context.MatchersForProperty, context);
             }
             else if (!context.IgnoreExpected)
             {
@@ -62,6 +67,11 @@ namespace Impact.Core
 
         private static void AddFailuresForObject(JObject expected, JObject actual, MatchingContext context)
         {
+            if (context.MatchersForProperty.Any())
+            {
+                AddFailures(expected, actual, context.MatchersForProperty, context);
+            }
+
             var allProperties = expected.Properties().Union(actual.Properties()).Select(p => p.Name).Distinct().ToArray();
 
             foreach (var property in allProperties)
@@ -73,23 +83,62 @@ namespace Impact.Core
 
                 if (!context.IgnoreExpected)
                 {
-                    var nullValue = JValue.CreateNull();
-
-                    if (actualProperty == null && expectedProperty != null && !expectedProperty.Value.Equals(nullValue))
+                    if (childContext.MatchersForProperty.Any())
                     {
-                        childContext.Result.AddFailure(childContext.PropertyPath, "expected not null value, got null");
-                        continue;
+                        AddFailures(expectedProperty?.Value, actualProperty?.Value, childContext.MatchersForProperty, childContext);
                     }
-
-                    if (expectedProperty == null && actualProperty != null && !actualProperty.Value.Equals(nullValue) && childContext.IsRequest)
+                    else
                     {
-                        childContext.Result.AddFailure(childContext.PropertyPath, "expected null value");
-                        continue;
+                        var nullValue = JValue.CreateNull();
+
+                        if (actualProperty == null && expectedProperty != null && !expectedProperty.Value.Equals(nullValue))
+                        {
+                            childContext.Result.AddFailure(childContext.PropertyPath, "expected not null value, got null");
+                            continue;
+                        }
+
+                        if (expectedProperty == null && actualProperty != null && !actualProperty.Value.Equals(nullValue) && childContext.IsRequest)
+                        {
+                            childContext.Result.AddFailure(childContext.PropertyPath, "expected null value");
+                            continue;
+                        }
                     }
                 }
 
-                AddFailures(expectedProperty.Value, actualProperty.Value, childContext);
+                var expectedValue = expectedProperty?.Value;
+                var actualValue = actualProperty?.Value;
+
+                if (expectedValue == null && actualValue == null)
+                {
+                    continue;
+                }
+
+                if (expectedValue == null)
+                {
+                    expectedValue = CreateEmpty(actualValue);
+                }
+                else if (actualValue == null)
+                {
+                    actualValue = CreateEmpty(expectedValue);
+                }
+
+                AddFailures(expectedValue, actualValue, childContext);
             }
+        }
+
+        private static JToken CreateEmpty(JToken other)
+        {
+            switch (other)
+            {
+                case JValue v:
+                    return JValue.CreateNull();
+                case JObject o:
+                    return new JObject();
+                case JArray a:
+                    return new JArray();
+            }
+
+            return null;
         }
 
         private static void AddFailuresForArray(JArray expected, JArray actual, MatchingContext context)
@@ -108,7 +157,7 @@ namespace Impact.Core
 
             if (lengthMatchers.Any())
             {
-                AddFailures(expectedItems, actualItems, lengthMatchers, context.Result);
+                AddFailures(expectedItems, actualItems, lengthMatchers, context);
             }
 
             for (int i = 0; i < Math.Min(actualItems.Length, expectedItems.Length); i++)
@@ -159,18 +208,13 @@ namespace Impact.Core
             return false;
         }
 
-        private static void AddFailures(object expected, object actual, IMatcher[] matchers, MatchCheckResult result)
+        private static void AddFailures(object expected, object actual, IMatcher[] matchers, MatchingContext context)
         {
-            var failingMatchers = matchers.Where(m => !m.Matches(expected, actual)).ToArray();
+            var failingMatchers = matchers.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
             foreach (var failingMatcher in failingMatchers)
             {
-                result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));
+                context.Result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));
             }
-        }
-
-        private JToken ToJToken(object o)
-        {
-            return JToken.Parse(JsonConvert.SerializeObject(o));
         }
     }
 }

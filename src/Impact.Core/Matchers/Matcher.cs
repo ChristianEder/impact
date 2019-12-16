@@ -34,15 +34,13 @@ namespace Impact.Core.Matchers
             }
         }
 
-        public abstract bool Matches(object expected, object actual);
+        public abstract bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch);
 
         public string PropertyPath { get; }
 
         public IPropertyPathPart[] PropertyPathParts { get; }
 
         public abstract JObject ToPactMatcher();
-
-        public abstract IMatcher Clone(string propertyPath);
 
         public abstract string FailureMessage(object expected, object actual);
         public bool AppliesTo(List<IPropertyPathPart> propertyPath)

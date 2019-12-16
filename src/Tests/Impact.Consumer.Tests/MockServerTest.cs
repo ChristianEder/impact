@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
-using Impact.Consumer.Serve;
+using System.Linq;
+using Impact.Consumer.Serve.Callbacks;
+using Impact.Consumer.Serve.Http.Matchers;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Impact.Tests.Shared;
@@ -14,8 +16,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void Xlkjsdlf()
         {
-            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\empty body no content type.json"));
-
+            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\.json"));
             var expected = (JObject)testCase["expected"];
             var rulesJsonProperty = expected["matchingRules"];
 
@@ -32,15 +33,23 @@ namespace Impact.Consumer.Tests
                 expected.Remove("matchingRules");
             }
 
+            rules = new[] { new RequestHeadersDoNotFailPostelsLaw() }.Concat(rules).ToArray();
+
             var c = new MatchingContext(rules, true);
             var m = new MatchChecker();
             m.Matches(expected, testCase["actual"], c);
+
+            var result = c.Result;
+            var matches = result.Matches;
+            var shouldMatch = (testCase["match"] as JValue).Value<bool>();
+
+
         }
 
         [Fact]
         public void ReturnsExpectedResponses()
         {
-            var mockServer = new MockServer(PublishedPact.DefinePact());
+            var mockServer = new CallbacksMockServer(PublishedPact.DefinePact());
 
             var response = mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
 
@@ -53,7 +62,7 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void FailsOnUnexpectedRequests()
         {
-            var mockServer = new MockServer(PublishedPact.DefinePact());
+            var mockServer = new CallbacksMockServer(PublishedPact.DefinePact());
 
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Bar" }));
             Assert.ThrowsAny<Exception>(() => mockServer.SendRequest<Request, Response>(new Request { Type = "Baz", Ids = { "3", "4" } }));
@@ -63,7 +72,7 @@ namespace Impact.Consumer.Tests
         public void PassesVerificationIfAllInteractionsWhereCalled()
         {
             var pact = PublishedPact.DefinePact();
-            var mockServer = new MockServer(pact);
+            var mockServer = new CallbacksMockServer(pact);
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
             mockServer.SendRequest<Request, Response>(new Request { Type = "Bar", Ids = { "3", "4" } });
@@ -76,7 +85,7 @@ namespace Impact.Consumer.Tests
         public void FailsVerificationIfNotAllInteractionsWhereCalled()
         {
             var pact = PublishedPact.DefinePact();
-            var mockServer = new MockServer(pact);
+            var mockServer = new CallbacksMockServer(pact);
 
             mockServer.SendRequest<Request, Response>(new Request { Type = "Foo", Ids = { "3", "4" } });
 

@@ -1,4 +1,6 @@
-﻿namespace Impact.Core.Matchers
+﻿using System;
+
+namespace Impact.Core.Matchers
 {
     public class PropertyPathPart : IPropertyPathPart
     {
@@ -15,7 +17,7 @@
                 return false;
             }
 
-            return Value == otherProperty?.Value || Value == "*" || otherProperty?.Value == "*";
+            return string.Equals(Value, otherProperty.Value, StringComparison.InvariantCultureIgnoreCase) || Value == "*" || otherProperty?.Value == "*";
         }
 
         public string Value { get; }

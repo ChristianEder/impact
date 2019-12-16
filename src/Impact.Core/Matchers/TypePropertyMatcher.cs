@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Impact.Core.Matchers
 {
@@ -8,7 +9,7 @@ namespace Impact.Core.Matchers
         {
         }
 
-        public override bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
             return expected.GetType() == actual.GetType();
         }
@@ -19,11 +20,6 @@ namespace Impact.Core.Matchers
             {
                 ["match"] = "type"
             };
-        }
-
-        public override IMatcher Clone(string propertyPath)
-        {
-            return new TypePropertyMatcher(propertyPath);
         }
 
         public override string FailureMessage(object expected, object actual)

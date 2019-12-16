@@ -8,8 +8,6 @@ namespace Impact.Consumer.Serve.Http
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<IHttpBodySerializer, JsonHttpBodySerializer>();
-            services.AddSingleton<IHttpBodyDeserializer, JsonHttpBodyDeserializer>();
         }
 
         public virtual void Configure(IApplicationBuilder app)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Impact.Consumer.Serialize;
+using Impact.Consumer.Serve;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
@@ -32,22 +32,24 @@ namespace Impact.Consumer.Define
             this.request = request;
             return new SpecifyRequestMachersOrResponse<T>(this);
         }
+
+        public Type RequestType => request.GetType();
         
-        internal bool Matches(object request)
+        internal bool Matches(object request, ITransportMatchers transportMatchers)
         {
-            var context = new MatchingContext(requestMatchers.ToArray(), true);
+            var context = new MatchingContext(transportMatchers.RequestMatchers.Concat(requestMatchers).ToArray(), true);
             var checker = new MatchChecker();
             checker.Matches(this.request, request, context);
             return context.Result.Matches;
         }
 
-        internal object Respond(object request)
+        internal object Respond(object request, ITransportMatchers transportMatchers)
         {
             var response = responseFactory(request);
 
             var expectedResponse = responseFactory(this.request);
 
-            var context = new MatchingContext(requestMatchers.ToArray(), false);
+            var context = new MatchingContext(transportMatchers.ResponseMatchers.Concat(responseMatchers).ToArray(), false);
             var checker = new MatchChecker();
             checker.Matches(expectedResponse, response, context);
             if (!context.Result.Matches)
@@ -60,7 +62,7 @@ namespace Impact.Consumer.Define
             return response;
         }
 
-        internal JObject ToPactInteraction(IRequestResponseSerializer serializer)
+        internal JObject ToPactInteraction(ITransportFormat format)
         {
             var pactInteraction = new JObject
             {
@@ -72,8 +74,8 @@ namespace Impact.Consumer.Define
                 pactInteraction["providerState"] = providerState;
             }
 
-            pactInteraction["request"] = serializer.Serialize(request);
-            pactInteraction["response"] = serializer.Serialize(responseFactory(request));
+            pactInteraction["request"] = format.SerializeRequest(request);
+            pactInteraction["response"] = format.SerializeResponse(responseFactory(request));
 
             if (responseMatchers.Any())
             {

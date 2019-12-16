@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Core.Matchers
@@ -12,7 +13,7 @@ namespace Impact.Core.Matchers
             this.regex = new Regex(regex, RegexOptions.Compiled);
         }
 
-        public override bool Matches(object expected, object actual)
+        public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
             if (ReferenceEquals(actual, null))
             {
@@ -29,11 +30,6 @@ namespace Impact.Core.Matchers
                 ["match"] = "regex",
                 ["regex"] = regex.ToString()
             };
-        }
-
-        public override IMatcher Clone(string propertyPath)
-        {
-            return new RegexPropertyMatcher(propertyPath, regex.ToString());
         }
 
         public override string FailureMessage(object expected, object actual)

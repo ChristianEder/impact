@@ -29,11 +29,19 @@ namespace Impact.Core
         public bool IsRequest { get; }
         public bool IgnoreExpected { get; private set; }
         public MatchCheckResult Result { get; }
+        public bool TerminationRequested { get; private set; }
+
+        public void Terminate()
+        {
+            TerminationRequested = true;
+        }
+
         public MatchingContext For(IPropertyPathPart property, bool? ignoreExpected = null)
         {
             return new MatchingContext(Matchers, IsRequest, new List<IPropertyPathPart>(PropertyPath) { property }, Result)
             {
-                IgnoreExpected = ignoreExpected.GetValueOrDefault(IgnoreExpected)
+                IgnoreExpected = ignoreExpected.GetValueOrDefault(IgnoreExpected),
+                TerminationRequested = TerminationRequested
             };
         }
     }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Impact.Consumer.Serialize;
+using Impact.Consumer.Serve;
+using Impact.Core;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Consumer.Define
@@ -20,9 +21,9 @@ namespace Impact.Consumer.Define
             interactions.Add(interaction);
         }
 
-        internal TResponse SendRequest<TRequest, TResponse>(TRequest request)
+        public Interaction GetMatchingInteraction(object request, ITransportMatchers transportMatchers)
         {
-            var matchingInteractions = interactions.Where(i => i.Matches(request)).ToArray();
+            var matchingInteractions = interactions.Where(i => i.Matches(request, transportMatchers)).ToArray();
             if (matchingInteractions.Length == 0)
             {
                 throw new Exception("No matching interaction was found");
@@ -33,9 +34,9 @@ namespace Impact.Consumer.Define
                 throw new Exception("More than 1 matching interactions where found");
             }
 
-            return (TResponse)matchingInteractions.Single().Respond(request);
+            return matchingInteractions.Single();
         }
-
+        
         public void VerifyAllInteractionsWhereCalled()
         {
             if (interactions.Any(i => i.CallCount < 1))
@@ -44,13 +45,13 @@ namespace Impact.Consumer.Define
             }
         }
 
-        public string ToPactFile(string consumer, string provider, IRequestResponseSerializer serializer)
+        public string ToPactFile(string consumer, string provider, ITransportFormat format)
         {
             return new JObject
             {
                 ["consumer"] = new JObject { ["name"] = consumer },
                 ["provider"] = new JObject { ["name"] = provider },
-                ["interactions"] = new JArray(interactions.Select(i => i.ToPactInteraction(serializer)).ToArray())
+                ["interactions"] = new JArray(interactions.Select(i => i.ToPactInteraction(format)).ToArray())
             }.ToString();
         }
     }

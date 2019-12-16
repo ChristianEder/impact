@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Impact.Consumer.Define;
-using Impact.Consumer.Serialize;
+using Impact.Consumer.Serve.Callbacks;
+using Impact.Core.Serialization;
 using Impact.Tests.Shared;
 
 namespace Impact.Consumer.Tests
@@ -10,7 +11,7 @@ namespace Impact.Consumer.Tests
     {
         public static string Get()
         {
-            return DefinePact().ToPactFile("Consumer", "Provider", new JsonRequestResponseSerializer());
+            return DefinePact().ToPactFile("Consumer", "Provider", new CallbackTransportFormat(new JsonPayloadFormat()));
         }
 
         public static readonly Func<Request, Response> ValidRequestHandler = request =>
