@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Impact.Consumer.Serve.Http;
+using Impact.Consumer.Serve.Http.Matchers;
 using Impact.Core.Matchers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,6 +28,15 @@ namespace Impact.Core.Tests
             {
                 rules = MatcherParser.Parse(rulesJsonProperty as JObject);
                 ((JObject)expected).Remove("matchingRules");
+            }
+
+            if (isRequest)
+            {
+                rules = new HttpTransportMatchers().RequestMatchers.Concat(rules).ToArray();
+            }
+            else
+            {
+                rules = new HttpTransportMatchers().ResponseMatchers.Concat(rules).ToArray();
             }
 
             var context = new MatchingContext(rules, isRequest);

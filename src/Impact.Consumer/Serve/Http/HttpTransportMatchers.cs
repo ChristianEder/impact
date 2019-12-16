@@ -7,6 +7,6 @@ namespace Impact.Consumer.Serve.Http
     public class HttpTransportMatchers : ITransportMatchers
     {
         public IMatcher[] RequestMatchers { get; } = { new RequestHeadersDoNotFailPostelsLaw()};
-        public IMatcher[] ResponseMatchers { get; }
+        public IMatcher[] ResponseMatchers { get; } = new IMatcher[0];
     }
 }

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Impact.Consumer\Impact.Consumer.csproj" />
     <ProjectReference Include="..\..\Impact.Core\Impact.Core.csproj" />
   </ItemGroup>
 

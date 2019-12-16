@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Impact.Consumer.Serve.Callbacks;
@@ -13,37 +14,72 @@ namespace Impact.Consumer.Tests
 {
     public class MockServerTest
     {
-        [Fact]
-        public void Xlkjsdlf()
+        [Theory]
+        [MemberData(nameof(V2SpecData))]
+        public void V2Specs(string name, bool isRequest, JObject testCase, string fileName)
         {
-            var testCase = JObject.Parse(File.ReadAllText(@"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\.json"));
-            var expected = (JObject)testCase["expected"];
+            var shouldMatch = (bool)testCase["match"];
+            var actual = testCase["actual"];
+            var expected = testCase["expected"];
+
+            Assert.Null(actual["matchingRules"]);
             var rulesJsonProperty = expected["matchingRules"];
-
-            if (testCase["actual"]["matchingRules"] != null)
-            {
-                throw new NotImplementedException();
-            }
-
             var rules = new IMatcher[0];
-
             if (rulesJsonProperty != null)
             {
                 rules = MatcherParser.Parse(rulesJsonProperty as JObject);
-                expected.Remove("matchingRules");
+                ((JObject)expected).Remove("matchingRules");
             }
 
             rules = new[] { new RequestHeadersDoNotFailPostelsLaw() }.Concat(rules).ToArray();
+            var context = new MatchingContext(rules, isRequest);
 
-            var c = new MatchingContext(rules, true);
-            var m = new MatchChecker();
-            m.Matches(expected, testCase["actual"], c);
+            var matchChecker = new MatchChecker();
+            matchChecker.Matches(expected, actual, context);
 
-            var result = c.Result;
-            var matches = result.Matches;
-            var shouldMatch = (testCase["match"] as JValue).Value<bool>();
+            if (shouldMatch)
+            {
+                if (!context.Result.Matches)
+                {
+                }
 
+                Assert.True(context.Result.Matches, name + ": " + context.Result.FailureReasons);
+            }
+            else
+            {
+                if (context.Result.Matches)
+                {
+                }
 
+                Assert.False(context.Result.Matches, name + ": did match although it shouldn't");
+            }
+        }
+
+        public static IEnumerable<object[]> V2SpecData
+        {
+            get
+            {
+                var testCaseDir = @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2";
+                var files = Directory.GetFiles(testCaseDir, "*.json", SearchOption.AllDirectories);
+
+                var testCases = files.Where(f => !new FileInfo(f).Name.ToLower().Contains("xml"));
+                return testCases.Select(f =>
+                {
+                    var name = string.Join(" ",
+                        f.Replace(testCaseDir, string.Empty).Trim().Replace("\\", "/").Replace(".json", string.Empty)
+                            .Split("/", StringSplitOptions.RemoveEmptyEntries));
+
+                    var testCase = JObject.Parse(File.ReadAllText(f));
+
+                    return new object[]
+                    {
+                        name,
+                        name.StartsWith("request"),
+                        testCase,
+                        f
+                    };
+                }).ToArray();
+            }
         }
 
         [Fact]

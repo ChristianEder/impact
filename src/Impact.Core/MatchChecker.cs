@@ -76,28 +76,38 @@ namespace Impact.Core
 
             foreach (var property in allProperties)
             {
-                var childContext = context.For(new PropertyPathPart(property));
-
                 var expectedProperty = expected.Property(property);
                 var actualProperty = actual.Property(property);
+
+                var expectedValue = expectedProperty?.Value;
+                var actualValue = actualProperty?.Value;
+
+                var childContext = context.For(new PropertyPathPart(property), ignoreExpected: IsNullish(expectedValue));
 
                 if (!context.IgnoreExpected)
                 {
                     if (childContext.MatchersForProperty.Any())
                     {
-                        AddFailures(expectedProperty?.Value, actualProperty?.Value, childContext.MatchersForProperty, childContext);
+                        AddFailures(
+                            expectedValue is JValue ev ? ev.Value : expectedValue,
+                            actualValue is JValue av ? av.Value : actualValue,
+                            childContext.MatchersForProperty, 
+                            childContext);
+
+                        if (expectedValue is JValue && actualValue is JValue)
+                        {
+                            continue;
+                        }
                     }
                     else
                     {
-                        var nullValue = JValue.CreateNull();
-
-                        if (actualProperty == null && expectedProperty != null && !expectedProperty.Value.Equals(nullValue))
+                        if (IsNullish(actualValue) && !IsNullish(expectedValue))
                         {
                             childContext.Result.AddFailure(childContext.PropertyPath, "expected not null value, got null");
                             continue;
                         }
 
-                        if (expectedProperty == null && actualProperty != null && !actualProperty.Value.Equals(nullValue) && childContext.IsRequest)
+                        if (IsNullish(expectedValue) && !IsNullish(actualValue) && (expectedValue != null || childContext.IsRequest))
                         {
                             childContext.Result.AddFailure(childContext.PropertyPath, "expected null value");
                             continue;
@@ -105,8 +115,7 @@ namespace Impact.Core
                     }
                 }
 
-                var expectedValue = expectedProperty?.Value;
-                var actualValue = actualProperty?.Value;
+              
 
                 if (expectedValue == null && actualValue == null)
                 {
@@ -174,7 +183,7 @@ namespace Impact.Core
                 {
                     var actualItem = actualItems[i];
 
-                    AddFailures(expectedItems.Last(), actualItem, context.For(new ArrayIndexPathPart(i.ToString()), ignoreExpected: true));
+                    AddFailures(expectedItems.Any() ? expectedItems.Last() : CreateEmpty(actualItem), actualItem, context.For(new ArrayIndexPathPart(i.ToString()), ignoreExpected: true));
                 }
             }
         }
@@ -210,11 +219,22 @@ namespace Impact.Core
 
         private static void AddFailures(object expected, object actual, IMatcher[] matchers, MatchingContext context)
         {
+            if (IsNullish(expected) || IsNullish(actual))
+            {
+                return;
+            }
+
+
             var failingMatchers = matchers.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
             foreach (var failingMatcher in failingMatchers)
             {
                 context.Result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));
             }
+        }
+
+        private static bool IsNullish(object value)
+        {
+            return ReferenceEquals(value, null) || (value is JValue v && v.Equals(JValue.CreateNull()));
         }
     }
 }
