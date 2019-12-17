@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Impact.Core;
 using Impact.Core.Matchers;
@@ -18,13 +17,13 @@ namespace Impact.Consumer.Serve.Http.Matchers
             var e = (JObject)expected ?? new JObject();
             var a = (JObject)actual ?? new JObject();
 
-            var expectedHeaders = e.Properties().Select(p => p.Name).ToArray();
-            var actualHeaders = a.Properties().Select(p => p.Name).ToArray();
+            var expectedHeaders = e.Properties().Select(p => p.Name.ToLowerInvariant()).ToArray();
+            var actualHeaders = a.Properties().Select(p => p.Name.ToLowerInvariant()).ToArray();
 
             foreach (var header in actualHeaders)
             {
-                var expectedHeader = e.Property(header)?.Value as JValue;
-                var actualHeader = a.Property(header)?.Value as JValue;
+                var expectedHeader = e.Properties().FirstOrDefault(p => p.Name.Equals(header, StringComparison.InvariantCultureIgnoreCase))?.Value as JValue;
+                var actualHeader = a.Properties().FirstOrDefault(p => p.Name.Equals(header, StringComparison.InvariantCultureIgnoreCase))?.Value as JValue;
 
                 var childContext = context.For(new PropertyPathPart(header), ignoreExpected: expectedHeader == null);
                 

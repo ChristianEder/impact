@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Impact.Consumer.Serve.Callbacks;
-using Impact.Consumer.Serve.Http.Matchers;
+using Impact.Consumer.Serve.Http;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Impact.Tests.Shared;
@@ -16,8 +16,29 @@ namespace Impact.Consumer.Tests
     {
         [Theory]
         [MemberData(nameof(V2SpecData))]
-        public void V2Specs(string name, bool isRequest, JObject testCase, string fileName)
+        public void Matcher(string name, bool isRequest, JObject testCase, string fileName)
         {
+            var matchChecker = new MatchChecker();
+            DoTest(name, isRequest, testCase, fileName, matchChecker.Matches);
+        }
+
+        [Theory]
+        [MemberData(nameof(V2SpecData))]
+        public void Matcher2(string name, bool isRequest, JObject testCase, string fileName)
+        {
+            var matchChecker = new MatchChecker2();
+            DoTest(name, isRequest, testCase, fileName, matchChecker.Matches);
+        }
+
+        private static void DoTest(string name, bool isRequest, JObject testCase, string fileName, Action<object, object, MatchingContext> match)
+        {
+            if (fileName ==
+                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\method\different method.json"
+            )
+            {
+
+            }
+
             var shouldMatch = (bool)testCase["match"];
             var actual = testCase["actual"];
             var expected = testCase["expected"];
@@ -31,11 +52,10 @@ namespace Impact.Consumer.Tests
                 ((JObject)expected).Remove("matchingRules");
             }
 
-            rules = new[] { new RequestHeadersDoNotFailPostelsLaw() }.Concat(rules).ToArray();
+            rules = (isRequest ? new HttpTransportMatchers().RequestMatchers : new HttpTransportMatchers().ResponseMatchers).Concat(rules).ToArray();
             var context = new MatchingContext(rules, isRequest);
 
-            var matchChecker = new MatchChecker();
-            matchChecker.Matches(expected, actual, context);
+            match(expected, actual, context);
 
             if (shouldMatch)
             {

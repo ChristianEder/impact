@@ -27,7 +27,7 @@ namespace Impact.Core
         public IMatcher[] Matchers { get; }
         public IMatcher[] MatchersForProperty { get; }
         public bool IsRequest { get; }
-        public bool IgnoreExpected { get; private set; }
+        public bool IgnoreExpected { get; set; }
         public MatchCheckResult Result { get; }
         public bool TerminationRequested { get; private set; }
 
