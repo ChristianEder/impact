@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Impact.Core.Matchers
 {
-    public abstract class TypeCountMatcher : Matcher
+    public abstract class TypeCountMatcher : Matcher, IArrayLengthMatcher
     {
         protected TypeCountMatcher(string path) : base(path)
         {

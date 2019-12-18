@@ -13,12 +13,16 @@ namespace Impact.Consumer.Serve.Http
         public PactV2CompliantHttpTransportMatchers()
         {
             var httpMatchers = new HttpTransportMatchers();
+
             RequestMatchers = new List<IMatcher>(httpMatchers.RequestMatchers)
             {
                 new V2CompliantRequestBody()
             }.ToArray();
 
-            ResponseMatchers = httpMatchers.ResponseMatchers;
+            ResponseMatchers = new List<IMatcher>(httpMatchers.ResponseMatchers)
+            {
+                new V2CompliantResponseBodyArrays()
+            }.ToArray();
         }
     }
 }

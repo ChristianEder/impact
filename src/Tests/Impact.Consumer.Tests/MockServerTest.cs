@@ -20,10 +20,9 @@ namespace Impact.Consumer.Tests
         {
             var matchChecker = new MatchChecker();
             if (fileName ==
-                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\unexpected key with null value.json"
+                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\plain text that does not match.json"
             )
             {
-
             }
 
             var shouldMatch = (bool)testCase["match"];

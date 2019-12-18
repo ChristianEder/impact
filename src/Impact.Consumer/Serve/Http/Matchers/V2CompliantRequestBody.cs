@@ -11,12 +11,14 @@ namespace Impact.Consumer.Serve.Http.Matchers
         {
         }
 
+        public override bool AppliesTo(object expected, object actual, MatchingContext context)
+        {
+            return base.AppliesTo(expected, actual, context) && expected == null && actual is JObject;
+        }
+
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
-            if (expected != null || !(actual is JObject actualBody))
-            {
-                return false;
-            }
+            var actualBody = (JObject) actual;
 
             foreach (var property in actualBody.Properties())
             {
@@ -35,5 +37,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
         {
             return "Request bodies do not match";
         }
+
+        public override bool IsTerminal => false;
     }
 }

@@ -2,8 +2,11 @@
 {
     public class ArrayIndexPathPart : IPropertyPathPart
     {
-        public ArrayIndexPathPart(string value)
+        private readonly bool exact;
+
+        public ArrayIndexPathPart(string value, bool exact = false)
         {
+            this.exact = exact;
             Value = value;
         }
 
@@ -14,8 +17,13 @@
             {
                 return false;
             }
+
+            if (exact || otherArray.exact)
+            {
+                return Value == otherArray.Value;
+            }
             
-            return Value == otherArray?.Value || Value == "*" || otherArray?.Value == "*";
+            return Value == otherArray.Value || Value == "*" || otherArray.Value == "*";
         }
 
         public string Value { get; }

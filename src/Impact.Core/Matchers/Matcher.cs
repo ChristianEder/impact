@@ -43,9 +43,9 @@ namespace Impact.Core.Matchers
         public abstract JObject ToPactMatcher();
 
         public abstract string FailureMessage(object expected, object actual);
-        public bool AppliesTo(List<IPropertyPathPart> propertyPath)
+        public virtual bool AppliesTo(List<IPropertyPathPart> propertyPath)
         {
-            if (propertyPath.Count() != PropertyPathParts.Length)
+            if (propertyPath.Count != PropertyPathParts.Length)
             {
                 return false;
             }
@@ -60,5 +60,12 @@ namespace Impact.Core.Matchers
 
             return true;
         }
+
+        public virtual bool AppliesTo(object expected, object actual, MatchingContext context)
+        {
+            return true;
+        }
+
+        public virtual bool IsTerminal => true;
     }
 }

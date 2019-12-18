@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Impact.Core.Matchers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Core
@@ -21,6 +22,10 @@ namespace Impact.Core
 
             if (expected.IsNullish() && actual.IsNullish())
             {
+                if (context.IsRequest && actual != null && expected == null)
+                {
+                    context.Result.AddFailure(context.PropertyPath, "Expected no value, but got one");
+                }
                 return;
             }
 
@@ -101,10 +106,30 @@ namespace Impact.Core
                 return;
             }
 
-            if (context.MatchersForProperty.Any())
+            var applyingMatchers = context.MatchersForProperty.Where(m => m.AppliesTo(expected, actual, context))
+                .ToArray();
+
+            if (applyingMatchers.Any())
             {
-                AddFailures(expected.Value, actual.Value, context.MatchersForProperty, context);
-                return;
+                var expectedValue = expected.Value;
+                var actualValue = actual.Value;
+
+                if (expected.Type == JTokenType.Date)
+                {
+                    expectedValue = JsonConvert.SerializeObject(expectedValue);
+                }
+                if (actual.Type == JTokenType.Date)
+                {
+                    actualValue = JsonConvert.SerializeObject(actualValue);
+                }
+
+
+                AddFailures(expectedValue, actualValue, applyingMatchers, context);
+
+                if (applyingMatchers.Any(m => m.IsTerminal))
+                {
+                    return;
+                }
             }
 
             if (!context.IgnoreExpected)
@@ -130,13 +155,14 @@ namespace Impact.Core
             var expectedItems = expected.ToArray();
             var actualItems = actual.ToArray();
 
-            var lengthMatchers = context.MatchersForProperty.Where(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher).ToArray();
+            var lengthMatchers = context.MatchersForProperty.OfType<IArrayLengthMatcher>().Where(m => m.AppliesTo(expectedItems, actualItems, context)).ToArray();
 
             if (lengthMatchers.Any())
             {
                 AddFailures(expectedItems, actualItems, lengthMatchers, context);
             }
-            else
+
+            if(!lengthMatchers.Any(m => m.IsTerminal))
             {
                 if (!context.IgnoreExpected)
                 {
@@ -173,7 +199,9 @@ namespace Impact.Core
                 return;
             }
 
-            var failingMatchers = matchers.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
+            var matchersThatApply = matchers.Where(m => m.AppliesTo(expected, actual, context));
+
+            var failingMatchers = matchersThatApply.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
             foreach (var failingMatcher in failingMatchers)
             {
                 context.Result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));

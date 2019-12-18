@@ -17,5 +17,7 @@ namespace Impact.Core.Matchers
         string FailureMessage(object expected, object actual);
 
         bool AppliesTo(List<IPropertyPathPart> propertyPath);
+        bool AppliesTo(object expected, object actual, MatchingContext context);
+        bool IsTerminal { get; }
     }
 }
