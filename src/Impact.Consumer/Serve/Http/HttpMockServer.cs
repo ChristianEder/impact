@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using Impact.Consumer.Define;
+using Impact.Core;
 using Impact.Core.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -12,12 +13,19 @@ namespace Impact.Consumer.Serve.Http
     {
         private readonly Pact pact;
         private readonly IPayloadFormat payloadFormat;
+        private readonly ITransportMatchers transportMatchers;
         private TestServer testServer;
 
         public HttpMockServer(Pact pact, IPayloadFormat payloadFormat)
+            : this(pact, payloadFormat, new PactV2CompliantHttpTransportMatchers())
+        {
+        }
+
+        public HttpMockServer(Pact pact, IPayloadFormat payloadFormat, ITransportMatchers transportMatchers)
         {
             this.pact = pact;
             this.payloadFormat = payloadFormat;
+            this.transportMatchers = transportMatchers;
         }
 
         public void Start()
@@ -29,6 +37,7 @@ namespace Impact.Consumer.Serve.Http
         {
             s.AddSingleton(pact);
             s.AddSingleton(payloadFormat);
+            s.AddSingleton(transportMatchers);
             s.AddSingleton<ITransportFormat, HttpTransportFormat>();
         }
 

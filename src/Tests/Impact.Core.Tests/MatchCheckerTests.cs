@@ -32,11 +32,11 @@ namespace Impact.Core.Tests
 
             if (isRequest)
             {
-                rules = new HttpTransportMatchers().RequestMatchers.Concat(rules).ToArray();
+                rules = new PactV2CompliantHttpTransportMatchers().RequestMatchers.Concat(rules).ToArray();
             }
             else
             {
-                rules = new HttpTransportMatchers().ResponseMatchers.Concat(rules).ToArray();
+                rules = new PactV2CompliantHttpTransportMatchers().ResponseMatchers.Concat(rules).ToArray();
             }
 
             var context = new MatchingContext(rules, isRequest);

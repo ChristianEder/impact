@@ -18,12 +18,13 @@ namespace Impact.Consumer.Serve.Http
     {
         private readonly Pact pact;
         private readonly IPayloadFormat payloadFormat;
-        private readonly ITransportMatchers matchers = new HttpTransportMatchers();
+        private readonly ITransportMatchers transportMatchers;
 
-        public HttpMockServerCatchAllController(Pact pact, IPayloadFormat payloadFormat)
+        public HttpMockServerCatchAllController(Pact pact, IPayloadFormat payloadFormat, ITransportMatchers transportMatchers)
         {
             this.pact = pact;
             this.payloadFormat = payloadFormat;
+            this.transportMatchers = transportMatchers;
         }
 
         [HttpGet("{**path}")]
@@ -50,13 +51,13 @@ namespace Impact.Consumer.Serve.Http
             HttpResponse response;
             try
             {
-                var interaction = pact.GetMatchingInteraction(request, matchers);
+                var interaction = pact.GetMatchingInteraction(request, transportMatchers);
                 if (request.Body is JObject jsonBody && interaction.RequestType != typeof(JObject))
                 {
                     request.Body = payloadFormat.Deserialize(jsonBody, interaction.RequestType);
                 }
 
-                response = (HttpResponse) interaction.Respond(request, matchers);
+                response = (HttpResponse) interaction.Respond(request, transportMatchers);
             }
             catch
             {

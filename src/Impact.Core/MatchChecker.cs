@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Impact.Core.Matchers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Core
@@ -20,12 +19,45 @@ namespace Impact.Core
                 return;
             }
 
-            if (!context.IgnoreExpected && AddFailuresForNull(expected, actual, context))
+            if (expected.IsNullish() && actual.IsNullish())
             {
                 return;
             }
 
-            if (!context.IgnoreExpected && expected.GetType() != actual.GetType())
+            if (actual == null)
+            {
+                context.Result.AddFailure(context.PropertyPath, "Expected a value, but got none");
+                return;
+            }
+
+            if (!context.IgnoreExpected)
+            {
+                if (expected == null)
+                {
+                    if (context.IsRequest)
+                    {
+                        if (context.MatchersForProperty.Any())
+                        {
+                            AddFailures(null, actual, context.MatchersForProperty, context);
+                        }
+                        else
+                        {
+                            context.Result.AddFailure(context.PropertyPath, "Expected no value, but got one");
+                        }
+
+                        return;
+                    }
+
+                    expected = actual.CreateEmpty();
+                    context.IgnoreExpected = true;
+                }
+            }
+            else
+            {
+                expected = expected ?? actual.CreateEmpty();
+            }
+
+            if (expected.GetType() != actual.GetType())
             {
                 context.Result.AddFailure(context.PropertyPath, "types do not match");
                 return;
@@ -55,11 +87,27 @@ namespace Impact.Core
                 return;
             }
 
+            var nullValue = JValue.CreateNull();
+
+            if (expected.Equals(nullValue) && !actual.Equals(nullValue) && !context.IgnoreExpected)
+            {
+                context.Result.AddFailure(context.PropertyPath, "Expected no value, but got " + actual.Value);
+                return;
+            }
+
+            if (actual.Equals(nullValue) && !expected.Equals(nullValue))
+            {
+                context.Result.AddFailure(context.PropertyPath, "Expected a value, but got none");
+                return;
+            }
+
             if (context.MatchersForProperty.Any())
             {
                 AddFailures(expected.Value, actual.Value, context.MatchersForProperty, context);
+                return;
             }
-            else if (!context.IgnoreExpected)
+
+            if (!context.IgnoreExpected)
             {
                 context.Result.AddFailure(context.PropertyPath, $"Expected {expected.Value}, but got {actual.Value}");
             }
@@ -67,87 +115,14 @@ namespace Impact.Core
 
         private static void AddFailuresForObject(JObject expected, JObject actual, MatchingContext context)
         {
-            if (context.MatchersForProperty.Any())
+            foreach (var property in expected.Properties().Concat(actual.Properties()).Select(p => p.Name.ToLowerInvariant()).Distinct().ToArray())
             {
-                AddFailures(expected, actual, context.MatchersForProperty, context);
+                var expectedProperty = expected.Properties().FirstOrDefault(p => p.Name.Equals(property, StringComparison.InvariantCultureIgnoreCase));
+                var actualProperty = actual.Properties().FirstOrDefault(p => p.Name.Equals(property, StringComparison.InvariantCultureIgnoreCase));
+
+                var propertyName = (expectedProperty ?? actualProperty)?.Name ?? property;
+                AddFailures(expectedProperty?.Value, actualProperty?.Value, context.For(new PropertyPathPart(propertyName)));
             }
-
-            var allProperties = expected.Properties().Union(actual.Properties()).Select(p => p.Name).Distinct().ToArray();
-
-            foreach (var property in allProperties)
-            {
-                var expectedProperty = expected.Property(property);
-                var actualProperty = actual.Property(property);
-
-                var expectedValue = expectedProperty?.Value;
-                var actualValue = actualProperty?.Value;
-
-                var childContext = context.For(new PropertyPathPart(property), ignoreExpected: IsNullish(expectedValue));
-
-                if (!context.IgnoreExpected)
-                {
-                    if (childContext.MatchersForProperty.Any())
-                    {
-                        AddFailures(
-                            expectedValue is JValue ev ? ev.Value : expectedValue,
-                            actualValue is JValue av ? av.Value : actualValue,
-                            childContext.MatchersForProperty, 
-                            childContext);
-
-                        if (expectedValue is JValue && actualValue is JValue)
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (IsNullish(actualValue) && !IsNullish(expectedValue))
-                        {
-                            childContext.Result.AddFailure(childContext.PropertyPath, "expected not null value, got null");
-                            continue;
-                        }
-
-                        if (IsNullish(expectedValue) && !IsNullish(actualValue) && (expectedValue != null || childContext.IsRequest))
-                        {
-                            childContext.Result.AddFailure(childContext.PropertyPath, "expected null value");
-                            continue;
-                        }
-                    }
-                }
-
-              
-
-                if (expectedValue == null && actualValue == null)
-                {
-                    continue;
-                }
-
-                if (expectedValue == null)
-                {
-                    expectedValue = CreateEmpty(actualValue);
-                }
-                else if (actualValue == null)
-                {
-                    actualValue = CreateEmpty(expectedValue);
-                }
-
-                AddFailures(expectedValue, actualValue, childContext);
-            }
-        }
-
-        private static JToken CreateEmpty(JToken other)
-        {
-            switch (other)
-            {
-                case JValue v:
-                    return JValue.CreateNull();
-                case JObject o:
-                    return new JObject();
-                case JArray a:
-                    return new JArray();
-            }
-
-            return null;
         }
 
         private static void AddFailuresForArray(JArray expected, JArray actual, MatchingContext context)
@@ -157,64 +132,38 @@ namespace Impact.Core
 
             var lengthMatchers = context.MatchersForProperty.Where(m => m is TypeMaxPropertyMatcher || m is TypeMinPropertyMatcher).ToArray();
 
-            if (!lengthMatchers.Any() && !context.IgnoreExpected && (actualItems.Length < expectedItems.Length || actualItems.Length > expectedItems.Length && context.IsRequest))
-            {
-                // Postel's law: Accept more actuals than expecteds for responses, but fail on requests. Never accept less than expected.
-                // The presence of length matchers indicates that the user wants to override this behaviour.
-                context.Result.AddFailure(context.PropertyPath, $"Expected {expectedItems.Length} elements, but got {actualItems.Length}");
-            }
-
             if (lengthMatchers.Any())
             {
                 AddFailures(expectedItems, actualItems, lengthMatchers, context);
             }
-
-            for (int i = 0; i < Math.Min(actualItems.Length, expectedItems.Length); i++)
+            else
             {
-                var actualItem = actualItems[i];
-                var expectedItem = expectedItems[i];
-
-                AddFailures(expectedItem, actualItem, context.For(new ArrayIndexPathPart(i.ToString())));
-            }
-
-            if (actual.Count > expected.Count)
-            {
-                for (var i = expected.Count; i < actual.Count; i++)
+                if (!context.IgnoreExpected)
                 {
-                    var actualItem = actualItems[i];
-
-                    AddFailures(expectedItems.Any() ? expectedItems.Last() : CreateEmpty(actualItem), actualItem, context.For(new ArrayIndexPathPart(i.ToString()), ignoreExpected: true));
+                    if (context.IsRequest)
+                    {
+                        if (actualItems.Length != expectedItems.Length)
+                        {
+                            context.Result.AddFailure(context.PropertyPath,
+                                $"Expected {expectedItems.Length} items, but got {actualItems.Length} items");
+                        }
+                    }
+                    else
+                    {
+                        if (actualItems.Length < expectedItems.Length)
+                        {
+                            context.Result.AddFailure(context.PropertyPath,
+                                $"Expected at least {expectedItems.Length} items, but got only {actualItems.Length} items");
+                        }
+                    }
                 }
             }
-        }
 
-        private static bool AddFailuresForNull(JToken expected, JToken actual, MatchingContext context)
-        {
-            var nullValue = JValue.CreateNull();
-
-            var expectedIsNull = nullValue.Equals(expected);
-            var actualIsNull = nullValue.Equals(actual);
-
-            if (expectedIsNull && actualIsNull)
+            for (var i = 0; i < actualItems.Length; i++)
             {
-                // Both are null, this is fine
-                return true;
+                AddFailures(i < expectedItems.Length ? expectedItems[i] : expectedItems.LastOrDefault(), actualItems[i], 
+                    context.For(new ArrayIndexPathPart(i.ToString()), ignoreExpected: i >= expectedItems.Length));
             }
-
-            if (expectedIsNull && context.IsRequest)
-            {
-                // expected is null, but actual ha a value. According to Postels Law, this is only allowed for responses.
-                context.Result.AddFailure(context.PropertyPath, "expected null value");
-                return true;
-            }
-
-            if (actualIsNull)
-            {
-                context.Result.AddFailure(context.PropertyPath, "expected not null value, got null");
-                return true;
-            }
-
-            return false;
         }
 
         private static void AddFailures(object expected, object actual, IMatcher[] matchers, MatchingContext context)
@@ -223,7 +172,6 @@ namespace Impact.Core
             {
                 return;
             }
-
 
             var failingMatchers = matchers.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
             foreach (var failingMatcher in failingMatchers)

@@ -16,24 +16,11 @@ namespace Impact.Consumer.Tests
     {
         [Theory]
         [MemberData(nameof(V2SpecData))]
-        public void Matcher(string name, bool isRequest, JObject testCase, string fileName)
+        public void V2Specs(string name, bool isRequest, JObject testCase, string fileName)
         {
             var matchChecker = new MatchChecker();
-            DoTest(name, isRequest, testCase, fileName, matchChecker.Matches);
-        }
-
-        [Theory]
-        [MemberData(nameof(V2SpecData))]
-        public void Matcher2(string name, bool isRequest, JObject testCase, string fileName)
-        {
-            var matchChecker = new MatchChecker2();
-            DoTest(name, isRequest, testCase, fileName, matchChecker.Matches);
-        }
-
-        private static void DoTest(string name, bool isRequest, JObject testCase, string fileName, Action<object, object, MatchingContext> match)
-        {
             if (fileName ==
-                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\method\different method.json"
+                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\unexpected key with null value.json"
             )
             {
 
@@ -52,10 +39,13 @@ namespace Impact.Consumer.Tests
                 ((JObject)expected).Remove("matchingRules");
             }
 
-            rules = (isRequest ? new HttpTransportMatchers().RequestMatchers : new HttpTransportMatchers().ResponseMatchers).Concat(rules).ToArray();
+            rules = (isRequest 
+                ? new PactV2CompliantHttpTransportMatchers().RequestMatchers 
+                : new PactV2CompliantHttpTransportMatchers().ResponseMatchers).Concat(rules).ToArray();
+
             var context = new MatchingContext(rules, isRequest);
 
-            match(expected, actual, context);
+            matchChecker.Matches(expected, actual, context);
 
             if (shouldMatch)
             {
