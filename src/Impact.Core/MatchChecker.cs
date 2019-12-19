@@ -140,10 +140,20 @@ namespace Impact.Core
 
         private static void AddFailuresForObject(JObject expected, JObject actual, MatchingContext context)
         {
-            foreach (var property in expected.Properties().Concat(actual.Properties()).Select(p => p.Name.ToLowerInvariant()).Distinct().ToArray())
+            var applyingMatchers = context.MatchersForProperty.Where(m => m.AppliesTo(expected, actual, context)).ToArray();
+            if (applyingMatchers.Any())
             {
-                var expectedProperty = expected.Properties().FirstOrDefault(p => p.Name.Equals(property, StringComparison.InvariantCultureIgnoreCase));
-                var actualProperty = actual.Properties().FirstOrDefault(p => p.Name.Equals(property, StringComparison.InvariantCultureIgnoreCase));
+                AddFailures(expected, actual, applyingMatchers, context);
+                if (applyingMatchers.Any(m => m.IsTerminal) || context.TerminationRequested)
+                {
+                    return;
+                }
+            }
+
+            foreach (var property in expected.Properties().Concat(actual.Properties()).Select(p => p.Name).Distinct().ToArray())
+            {
+                var expectedProperty = expected.Properties().FirstOrDefault(p => p.Name.Equals(property));
+                var actualProperty = actual.Properties().FirstOrDefault(p => p.Name.Equals(property));
 
                 var propertyName = (expectedProperty ?? actualProperty)?.Name ?? property;
                 AddFailures(expectedProperty?.Value, actualProperty?.Value, context.For(new PropertyPathPart(propertyName)));

@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Impact.Consumer.Serve.Http.Matchers
 {
-    public class RequestHeadersDoNotFailPostelsLaw : Matcher
+    public class HeadersDoNotFailPostelsLaw : Matcher
     {
-        public RequestHeadersDoNotFailPostelsLaw() : base(nameof(HttpRequest.Headers))
+        public HeadersDoNotFailPostelsLaw() : base(nameof(HttpRequest.Headers))
         {
         }
 
@@ -51,5 +51,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
 
             return "Missing expected headers: " + string.Join(", ", missingHeaders);
         }
+
+        public override bool IsTerminal => true;
     }
 }

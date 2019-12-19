@@ -25,7 +25,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
                 return false;
             }
 
-            return expected is JToken[] && actual is JToken[];
+            return !context.IgnoreExpected && expected is JToken[] && actual is JToken[];
         }
 
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
@@ -70,7 +70,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
 
         public override string FailureMessage(object expected, object actual)
         {
-            return $"v2 comp: Expected {((JToken[])expected).Length} items, but got {((JToken[])actual).Length} items";
+            return @"Expected {((JToken[])expected).Length} items, but got {((JToken[])actual).Length} items";
         }
 
         public override bool IsTerminal => false;

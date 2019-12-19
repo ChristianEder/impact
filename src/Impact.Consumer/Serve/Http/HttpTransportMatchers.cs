@@ -8,11 +8,16 @@ namespace Impact.Consumer.Serve.Http
     {
         public IMatcher[] RequestMatchers { get; } =
         {
-            new RequestHeadersDoNotFailPostelsLaw(),
-            new RequestHeadersAllowWhitespaceAfterComma(),
+            new HeadersDoNotFailPostelsLaw(),
+            new HeadersAllowWhitespaceAfterComma(),
             new RequestMethodIgnoresCasing(),
             new RequestQueryOrderingAndEscapingDoNotFail()
         };
-        public IMatcher[] ResponseMatchers { get; } = new IMatcher[0];
+
+        public IMatcher[] ResponseMatchers { get; } =
+        {
+            new HeadersDoNotFailPostelsLaw(),
+            new HeadersAllowWhitespaceAfterComma()
+        };
     }
 }

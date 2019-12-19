@@ -6,19 +6,34 @@ using Newtonsoft.Json.Linq;
 
 namespace Impact.Consumer.Serve.Http.Matchers
 {
-    public class RequestHeadersAllowWhitespaceAfterComma : Matcher
+    public class HeadersAllowWhitespaceAfterComma : Matcher
     {
-        public RequestHeadersAllowWhitespaceAfterComma() : base(nameof(HttpRequest.Headers) + ".*")
+        public HeadersAllowWhitespaceAfterComma() : base(nameof(HttpRequest.Headers) + ".*")
         {
+        }
+
+        public override bool AppliesTo(object expected, object actual, MatchingContext context)
+        {
+            if (!base.AppliesTo(expected, actual, context))
+            {
+                return false;
+            }
+
+            if (context.IgnoreExpected)
+            {
+                return false;
+            }
+
+            if (context.MatchersForProperty.Any(m => m != this))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
-            if (context.MatchersForProperty.Any(m => m != this))
-            {
-                return true;
-            }
-
             var expectedValue = expected?.ToString()?.Trim();
             var actualValue = actual?.ToString()?.Trim();
 

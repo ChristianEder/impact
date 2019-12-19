@@ -30,13 +30,15 @@ namespace Impact.Core.Tests
                 ((JObject)expected).Remove("matchingRules");
             }
 
+            var transportMatchers = new PactV2CompliantHttpTransportMatchers();
+
             if (isRequest)
             {
-                rules = new PactV2CompliantHttpTransportMatchers().RequestMatchers.Concat(rules).ToArray();
+                rules = transportMatchers.RequestMatchers.Concat(rules).ToArray();
             }
             else
             {
-                rules = new PactV2CompliantHttpTransportMatchers().ResponseMatchers.Concat(rules).ToArray();
+                rules = transportMatchers.ResponseMatchers.Concat(rules).ToArray();
             }
 
             var context = new MatchingContext(rules, isRequest);

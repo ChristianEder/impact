@@ -20,7 +20,7 @@ namespace Impact.Consumer.Tests
         {
             var matchChecker = new MatchChecker();
             if (fileName ==
-                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\body\plain text that does not match.json"
+                @"C:\prj\private\impact\src\Tests\Impact.Core.Tests\testcases\v2\request\headers\unexpected header found.json"
             )
             {
             }
@@ -38,9 +38,11 @@ namespace Impact.Consumer.Tests
                 ((JObject)expected).Remove("matchingRules");
             }
 
+            var transportMatchers = new PactV2CompliantHttpTransportMatchers();
+
             rules = (isRequest 
-                ? new PactV2CompliantHttpTransportMatchers().RequestMatchers 
-                : new PactV2CompliantHttpTransportMatchers().ResponseMatchers).Concat(rules).ToArray();
+                ? transportMatchers.RequestMatchers 
+                : transportMatchers.ResponseMatchers).Concat(rules).ToArray();
 
             var context = new MatchingContext(rules, isRequest);
 

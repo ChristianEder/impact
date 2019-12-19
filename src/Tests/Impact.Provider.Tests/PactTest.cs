@@ -1,5 +1,6 @@
 ﻿using System;
 using Impact.Consumer.Tests;
+using Impact.Core;
 using Impact.Tests.Shared;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace Impact.Provider.Tests
 
         public PactTest()
         {
-            pact = new Pact(PublishedPact.Get(), new JsonRequestResponseDeserializer<Request, Response>());
+            pact = new Pact(PublishedPact.Get(), new JsonRequestResponseDeserializer<Request, Response>(), new NoTransportMatchers());
         }
 
         [Fact]
