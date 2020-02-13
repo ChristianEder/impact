@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -6,8 +7,25 @@ namespace Impact.Core.Matchers
 {
     public class TypePropertyMatcher : Matcher
     {
+        private readonly bool applyToAll;
+
         public TypePropertyMatcher(string path) : base(path)
         {
+        }
+
+        private TypePropertyMatcher(string path, bool applyToAll) : base(path)
+        {
+            this.applyToAll = applyToAll;
+        }
+
+        public override bool AppliesTo(object expected, object actual, MatchingContext context)
+        {
+            return applyToAll || base.AppliesTo(expected, actual, context);
+        }
+
+        public override bool AppliesTo(List<IPropertyPathPart> propertyPath)
+        {
+            return applyToAll || base.AppliesTo(propertyPath);
         }
 
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
@@ -20,7 +38,7 @@ namespace Impact.Core.Matchers
                     var actualProperty = actualObject.Properties().FirstOrDefault(p => p.Name.Equals(property));
 
                     var propertyName = (expectedProperty ?? actualProperty)?.Name ?? property;
-                    deepMatch(expectedProperty?.Value, actualProperty?.Value, context.For(new PropertyPathPart(propertyName), null, new TypePropertyMatcher(this.PropertyPath + "." + propertyName)));
+                    deepMatch(expectedProperty?.Value, actualProperty?.Value, context.For(new PropertyPathPart(propertyName), null, new TypePropertyMatcher(PropertyPath + "." + propertyName, applyToAll)));
                 }
                 context.Terminate();
                 return context.Result.Matches;
