@@ -35,9 +35,15 @@ namespace Impact.Core
             TerminationRequested = true;
         }
 
-        public MatchingContext For(IPropertyPathPart property, bool? ignoreExpected = null)
+        public MatchingContext For(IPropertyPathPart property, bool? ignoreExpected = null, params IMatcher[] additionalMatchers)
         {
-            return new MatchingContext(Matchers, IsRequest, new List<IPropertyPathPart>(PropertyPath) { property }, Result)
+            var matchers = Matchers;
+            if(additionalMatchers != null && additionalMatchers.Any())
+            {
+                matchers = Matchers.Concat(additionalMatchers).ToArray();
+            }
+
+            return new MatchingContext(matchers, IsRequest, new List<IPropertyPathPart>(PropertyPath) { property }, Result)
             {
                 IgnoreExpected = ignoreExpected.GetValueOrDefault(IgnoreExpected),
                 TerminationRequested = TerminationRequested

@@ -211,7 +211,7 @@ namespace Impact.Core
 
             var matchersThatApply = matchers.Where(m => m.AppliesTo(expected, actual, context));
 
-            var failingMatchers = matchersThatApply.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(JToken.FromObject(e), JToken.FromObject(a), c))).ToArray();
+            var failingMatchers = matchersThatApply.Where(m => !m.Matches(expected, actual, context, (e, a, c) => AddFailures(e == null ? null : JToken.FromObject(e), a == null ? null: JToken.FromObject(a), c))).ToArray();
             foreach (var failingMatcher in failingMatchers)
             {
                 context.Result.AddFailure(failingMatcher.PropertyPathParts, failingMatcher.FailureMessage(expected, actual));

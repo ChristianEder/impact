@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Core.Matchers
@@ -11,6 +12,20 @@ namespace Impact.Core.Matchers
 
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
+            if (expected is JObject expectedObject && actual is JObject actualObject)
+            {
+                foreach (var property in expectedObject.Properties().Concat(actualObject.Properties()).Select(p => p.Name).Distinct().ToArray())
+                {
+                    var expectedProperty = expectedObject.Properties().FirstOrDefault(p => p.Name.Equals(property));
+                    var actualProperty = actualObject.Properties().FirstOrDefault(p => p.Name.Equals(property));
+
+                    var propertyName = (expectedProperty ?? actualProperty)?.Name ?? property;
+                    deepMatch(expectedProperty?.Value, actualProperty?.Value, context.For(new PropertyPathPart(propertyName), null, new TypePropertyMatcher(this.PropertyPath + "." + propertyName)));
+                }
+                context.Terminate();
+                return context.Result.Matches;
+
+            }
             return expected.GetType() == actual.GetType();
         }
 
@@ -27,6 +42,11 @@ namespace Impact.Core.Matchers
             if (expected.GetType() != actual.GetType())
             {
                 return $"Expected type {expected.GetType().Name}, but got {actual.GetType().Name}";
+            }
+
+            if (expected is JObject expectedObject && actual is JObject actualObject)
+            {
+                return "Expected and actual object structures do not match";
             }
 
             return string.Empty;

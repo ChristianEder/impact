@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Impact.Consumer.Serve.Http;
-using Impact.Consumer.Serve.Http.Matchers;
 using Impact.Core.Matchers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -17,7 +15,7 @@ namespace Impact.Core.Tests
         [MemberData(nameof(V2SpecData))]
         public void V2Specs(string name, bool isRequest, JObject testCase)
         {
-            var shouldMatch = (bool) testCase["match"];
+        var shouldMatch = (bool) testCase["match"];
             var actual = testCase["actual"];
             var expected = testCase["expected"];
 
@@ -69,14 +67,18 @@ namespace Impact.Core.Tests
 
                     var testCase = JObject.Parse(File.ReadAllText(f));
 
-                    name += (bool) testCase["match"] ? " matches" : " does not match";
+                    name += (bool)testCase["match"] ? " matches" : " does not match";
                     return new object[]
                     {
                         name,
                         name.StartsWith("request"),
                         testCase
                     };
-                }).ToArray();
+                })
+                    //.Where(t => (bool)t[1] == false && (t[0].ToString().StartsWith("response body objects in array type matching") ||
+                    //t[0].ToString().StartsWith("response body objects in array with type mismatching")))
+                .ToArray();
+                
             }
         }
     }
