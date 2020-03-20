@@ -41,12 +41,17 @@ namespace Impact.Consumer.Serve.Http
                 Method = new HttpMethod(Request.Method),
                 Path = Request.Path.Value,
                 Query = Request.QueryString.Value,
-                Headers = Request.Headers.Any()
-                    ? new Dictionary<string, string>(Request.Headers.Select(h =>
-                        new KeyValuePair<string, string>(h.Key, h.Value.ToString())))
-                    : null,
                 Body = payloadFormat.Deserialize(Request.Body)
             };
+
+            if (Request.Headers.Any())
+            {
+                request.Headers = request.Headers ?? new Dictionary<string, string>();
+                foreach (var header in Request.Headers)
+                {
+                    request.Headers[header.Key] = header.Value;
+                }
+            }
 
             HttpResponse response;
             try
@@ -62,7 +67,8 @@ namespace Impact.Consumer.Serve.Http
             catch
             {
                 Response.StatusCode = 404;
-                await Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Getting a response from the pact failed for this request"));
+                var bytes = Encoding.UTF8.GetBytes("Getting a response from the pact failed for this request");
+                await Response.Body.WriteAsync(bytes, 0, bytes.Length);
                 return;
             }
 

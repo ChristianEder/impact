@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core", "Impact.Core\Impact.Core.csproj", "{1DAF4292-10E7-458A-B852-660F8B3043B4}"
 EndProject
@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Provider.Tests", "Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Tests.Shared", "Tests\Impact.Tests.Shared\Impact.Tests.Shared.csproj", "{07F22C42-8D1C-4A0E-91BA-A9C3F00C7381}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Tests", "Tests\Impact.Core.Tests\Impact.Core.Tests.csproj", "{F1DD9383-9E5D-4217-B57E-74D34350E5D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Tests", "Tests\Impact.Core.Tests\Impact.Core.Tests.csproj", "{F1DD9383-9E5D-4217-B57E-74D34350E5D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Payload.Json", "Impact.Core.Payload.Json\Impact.Core.Payload.Json.csproj", "{AE325475-D124-429E-93A8-320C104288B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{F1DD9383-9E5D-4217-B57E-74D34350E5D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1DD9383-9E5D-4217-B57E-74D34350E5D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1DD9383-9E5D-4217-B57E-74D34350E5D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE325475-D124-429E-93A8-320C104288B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE325475-D124-429E-93A8-320C104288B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE325475-D124-429E-93A8-320C104288B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE325475-D124-429E-93A8-320C104288B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

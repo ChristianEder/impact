@@ -11,7 +11,7 @@ namespace Impact.Core.Matchers
         {
             PropertyPath = path;
 
-            PropertyPathParts = path.Split(".").SelectMany(p =>
+            PropertyPathParts = path.Split('.').SelectMany(p =>
                 p.EndsWith("]") ? ParseArrayPathParts(p) : Enumerable.Repeat(new PropertyPathPart(p), 1)
             ).ToArray();
         }

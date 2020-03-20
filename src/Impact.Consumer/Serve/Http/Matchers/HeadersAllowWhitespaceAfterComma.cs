@@ -41,8 +41,8 @@ namespace Impact.Consumer.Serve.Http.Matchers
             {
                 context.Terminate();
 
-                var expectedValues = expectedValue.Split(",").Select(v => v.Trim()).ToArray();
-                var actualValues = actualValue.Split(",").Select(v => v.Trim()).ToArray();
+                var expectedValues = expectedValue.Split(',').Select(v => v.Trim()).ToArray();
+                var actualValues = actualValue.Split(',').Select(v => v.Trim()).ToArray();
 
                 if (expectedValues.Length != actualValues.Length)
                 {

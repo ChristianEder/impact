@@ -2,6 +2,7 @@
 using System.Linq;
 using Impact.Consumer.Define;
 using Impact.Consumer.Serve.Callbacks;
+using Impact.Core.Payload.Json;
 using Impact.Core.Serialization;
 using Impact.Tests.Shared;
 

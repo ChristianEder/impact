@@ -18,7 +18,7 @@ namespace Impact.Consumer
                 memberExpression = getMemberNameFunc(memberExpression.Expression);
             }
 
-            return string.Join('.', names);
+            return string.Join(".", names);
         }
     }
 }
