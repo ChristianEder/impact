@@ -3,7 +3,7 @@ using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http.Matchers
+namespace Impact.Core.Transport.Http.Matchers
 {
     public class V2CompliantRequestBody : Matcher
     {
@@ -18,7 +18,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
 
         public override bool Matches(object expected, object actual, MatchingContext context, Action<object, object, MatchingContext> deepMatch)
         {
-            var actualBody = (JObject) actual;
+            var actualBody = (JObject)actual;
 
             foreach (var property in actualBody.Properties())
             {

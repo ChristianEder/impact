@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net.Http;
-using Impact.Consumer.Define;
 using Impact.Core;
 using Impact.Core.Serialization;
+using Impact.Core.Transport.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Consumer.Transport.Http
 {
     public class HttpMockServer : IDisposable
     {

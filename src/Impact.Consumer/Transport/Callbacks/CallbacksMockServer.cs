@@ -1,7 +1,6 @@
-﻿using Impact.Consumer.Define;
-using Impact.Core;
+﻿using Impact.Core;
 
-namespace Impact.Consumer.Serve.Callbacks
+namespace Impact.Consumer.Transport.Callbacks
 {
     public class CallbacksMockServer
     {
@@ -16,7 +15,7 @@ namespace Impact.Consumer.Serve.Callbacks
         public TResponse SendRequest<TRequest, TResponse>(TRequest request)
         {
             var interaction = pact.GetMatchingInteraction(request, matchers);
-            return (TResponse) interaction.Respond(request, matchers);
+            return (TResponse)interaction.Respond(request, matchers);
         }
     }
 }

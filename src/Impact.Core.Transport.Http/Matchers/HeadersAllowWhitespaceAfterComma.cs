@@ -4,7 +4,7 @@ using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http.Matchers
+namespace Impact.Core.Transport.Http.Matchers
 {
     public class HeadersAllowWhitespaceAfterComma : Matcher
     {
@@ -57,7 +57,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
                     }
                 }
             }
-            else if(expected?.ToString() != actual?.ToString())
+            else if (expected?.ToString() != actual?.ToString())
             {
                 return false;
             }

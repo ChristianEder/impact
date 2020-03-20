@@ -2,7 +2,7 @@
 using System.Net;
 using Newtonsoft.Json;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Core.Transport.Http
 {
     public class HttpResponse
     {

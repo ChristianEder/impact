@@ -1,11 +1,11 @@
 ﻿using System;
-using Impact.Consumer.Serve.Callbacks;
+using Impact.Consumer.Transport.Callbacks;
 using Impact.Tests.Shared;
 using Xunit;
 
 namespace Impact.Consumer.Tests
 {
-    public class MockServerTest
+	public class MockServerTest
     {
         [Fact]
         public void ReturnsExpectedResponses()

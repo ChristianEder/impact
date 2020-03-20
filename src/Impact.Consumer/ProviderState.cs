@@ -1,4 +1,4 @@
-﻿namespace Impact.Consumer.Define
+﻿namespace Impact.Consumer
 {
     public class ProviderState
     {

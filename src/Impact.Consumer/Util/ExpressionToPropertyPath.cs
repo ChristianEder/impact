@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Impact.Consumer
 {
-    public static class ExpressionToPropertyPath
+    internal static class ExpressionToPropertyPath
     {
         public static string Convert<T, TProperty>(Expression<Func<T, TProperty>> property)
         {

@@ -1,7 +1,7 @@
 ﻿using Impact.Core.Serialization;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Callbacks
+namespace Impact.Consumer.Transport.Callbacks
 {
     public class CallbackTransportFormat : ITransportFormat
     {

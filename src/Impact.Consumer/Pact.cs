@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Impact.Consumer.Serve;
+using Impact.Consumer.Transport;
 using Impact.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Define
+namespace Impact.Consumer
 {
     public class Pact
     {
@@ -36,7 +36,7 @@ namespace Impact.Consumer.Define
 
             return matchingInteractions.Single();
         }
-        
+
         public void VerifyAllInteractionsWhereCalled()
         {
             if (interactions.Any(i => i.CallCount < 1))

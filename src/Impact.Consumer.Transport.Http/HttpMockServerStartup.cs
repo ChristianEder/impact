@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Consumer.Transport.Http
 {
     public class HttpMockServerStartup
     {

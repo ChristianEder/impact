@@ -4,7 +4,7 @@ using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http.Matchers
+namespace Impact.Core.Transport.Http.Matchers
 {
     public class HeadersDoNotFailPostelsLaw : Matcher
     {
@@ -26,7 +26,7 @@ namespace Impact.Consumer.Serve.Http.Matchers
                 var actualHeader = a.Properties().FirstOrDefault(p => p.Name.Equals(header, StringComparison.InvariantCultureIgnoreCase))?.Value as JValue;
 
                 var childContext = context.For(new PropertyPathPart(header), ignoreExpected: expectedHeader == null);
-                
+
                 deepMatch(expectedHeader ?? JValue.CreateString(""), actualHeader, childContext);
             }
 

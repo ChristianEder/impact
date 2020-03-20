@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Impact.Consumer.Serve.Http.Matchers;
 using Impact.Core;
 using Impact.Core.Matchers;
+using Impact.Core.Transport.Http.Matchers;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Core.Transport.Http
 {
     public class PactV2CompliantHttpTransportMatchers : ITransportMatchers
     {

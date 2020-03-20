@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Impact.Consumer.Serve;
+using Impact.Consumer.Transport;
 using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Define
+namespace Impact.Consumer
 {
     public class Interaction
     {
@@ -34,7 +34,7 @@ namespace Impact.Consumer.Define
         }
 
         public Type RequestType => request.GetType();
-        
+
         internal bool Matches(object request, ITransportMatchers transportMatchers)
         {
             var context = new MatchingContext(transportMatchers.RequestMatchers.Concat(requestMatchers).ToArray(), true);
@@ -43,7 +43,7 @@ namespace Impact.Consumer.Define
             return context.Result.Matches;
         }
 
-        internal object Respond(object request, ITransportMatchers transportMatchers)
+        public object Respond(object request, ITransportMatchers transportMatchers)
         {
             var response = responseFactory(request);
 
@@ -80,7 +80,7 @@ namespace Impact.Consumer.Define
             if (responseMatchers.Any())
             {
                 var rules = new JObject();
-                foreach (var responseMatcher in responseMatchers.GroupBy(m=> m.PropertyPath))
+                foreach (var responseMatcher in responseMatchers.GroupBy(m => m.PropertyPath))
                 {
                     rules["$." + responseMatcher.Key] = new JArray(responseMatcher.Select(r => r.ToPactMatcher()).ToArray());
                 }

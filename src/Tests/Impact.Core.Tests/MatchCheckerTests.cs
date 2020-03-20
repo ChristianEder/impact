@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Impact.Consumer.Serve.Http;
 using Impact.Core.Matchers;
+using Impact.Core.Transport.Http;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

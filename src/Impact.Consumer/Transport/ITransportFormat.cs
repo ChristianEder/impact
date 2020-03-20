@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve
+namespace Impact.Consumer.Transport
 {
     public interface ITransportFormat
     {

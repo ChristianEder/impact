@@ -3,7 +3,7 @@ using Impact.Core;
 using Impact.Core.Matchers;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http.Matchers
+namespace Impact.Core.Transport.Http.Matchers
 {
     public class RequestMethodIgnoresCasing : Matcher
     {

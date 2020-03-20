@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Impact.Consumer.Define;
 using Impact.Core;
 using Impact.Core.Serialization;
+using Impact.Core.Transport.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Consumer.Transport.Http
 {
     [Route("")]
     public class HttpMockServerCatchAllController : Controller
@@ -36,7 +35,7 @@ namespace Impact.Consumer.Serve.Http
         [HttpOptions("{**path}")]
         public async Task OnRequest(string path)
         {
-            var request = new HttpRequest
+            var request = new Core.Transport.Http.HttpRequest
             {
                 Method = new HttpMethod(Request.Method),
                 Path = Request.Path.Value,
@@ -53,7 +52,7 @@ namespace Impact.Consumer.Serve.Http
                 }
             }
 
-            HttpResponse response;
+            Core.Transport.Http.HttpResponse response;
             try
             {
                 var interaction = pact.GetMatchingInteraction(request, transportMatchers);
@@ -62,7 +61,7 @@ namespace Impact.Consumer.Serve.Http
                     request.Body = payloadFormat.Deserialize(jsonBody, interaction.RequestType);
                 }
 
-                response = (HttpResponse) interaction.Respond(request, transportMatchers);
+                response = (Core.Transport.Http.HttpResponse)interaction.Respond(request, transportMatchers);
             }
             catch
             {

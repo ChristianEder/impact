@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Impact.Core.Matchers;
 
-namespace Impact.Consumer.Define
+namespace Impact.Consumer
 {
     public class PropertyMatcher<TProperty>
     {

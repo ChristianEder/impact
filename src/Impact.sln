@@ -21,6 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Tests", "Tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Payload.Json", "Impact.Core.Payload.Json\Impact.Core.Payload.Json.csproj", "{AE325475-D124-429E-93A8-320C104288B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Transport.Http", "Impact.Core.Transport.Http\Impact.Core.Transport.Http.csproj", "{69D033C9-4062-4796-B4D9-BDDD7C8C4483}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Consumer.Transport.Http", "Impact.Consumer.Transport.Http\Impact.Consumer.Transport.Http.csproj", "{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Provider.Transport.Http", "Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj", "{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +65,18 @@ Global
 		{AE325475-D124-429E-93A8-320C104288B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE325475-D124-429E-93A8-320C104288B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE325475-D124-429E-93A8-320C104288B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D033C9-4062-4796-B4D9-BDDD7C8C4483}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D033C9-4062-4796-B4D9-BDDD7C8C4483}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D033C9-4062-4796-B4D9-BDDD7C8C4483}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D033C9-4062-4796-B4D9-BDDD7C8C4483}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

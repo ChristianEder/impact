@@ -1,7 +1,8 @@
 ﻿using Impact.Core.Serialization;
+using Impact.Core.Transport.Http;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Serve.Http
+namespace Impact.Consumer.Transport.Http
 {
     public class HttpTransportFormat : ITransportFormat
     {
@@ -14,7 +15,7 @@ namespace Impact.Consumer.Serve.Http
 
         public JToken SerializeRequest(object request)
         {
-            var httpRequest = (HttpRequest) request;
+            var httpRequest = (HttpRequest)request;
             var body = httpRequest.Body;
             httpRequest.Body = null;
 
