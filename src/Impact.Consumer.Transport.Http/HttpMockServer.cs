@@ -55,5 +55,7 @@ namespace Impact.Consumer.Transport.Http
         {
             testServer?.Dispose();
         }
+
+        public ITransportFormat TransportFormat => testServer.Host.Services.GetService<ITransportFormat>();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Impact.Core.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,60 +10,70 @@ using System.Text;
 
 namespace Impact.Core.Payload.Json
 {
-    public class JsonPayloadFormat : IPayloadFormat
-    {
-        private readonly JsonSerializerSettings settings;
+	public class JsonPayloadFormat : IPayloadFormat
+	{
+		private readonly JsonSerializerSettings settings;
+		private readonly JsonSerializer serializer;
 
-        public JsonPayloadFormat() : this(Encoding.UTF8, new JsonSerializerSettings())
-        {
-        }
+		public JsonPayloadFormat() : this(Encoding.UTF8, CreateDefaultSettings())
+		{
+		}
 
-        public JsonPayloadFormat(Encoding encoding, JsonSerializerSettings settings)
-        {
-            Encoding = encoding;
-            this.settings = settings;
-        }
+		public JsonPayloadFormat(Encoding encoding, JsonSerializerSettings settings)
+		{
+			Encoding = encoding;
+			this.settings = settings;
+			serializer = JsonSerializer.CreateDefault(settings);
+		}
 
-        public Encoding Encoding { get; }
+		public Encoding Encoding { get; }
 
-        public JToken Serialize(object payload)
-        {
-            return JToken.FromObject(payload);
-        }
+		public JToken Serialize(object payload)
+		{
 
-        public void Serialize(object payload, Stream stream)
-        {
-            var json = JToken.FromObject(payload).ToString(settings.Formatting, (settings.Converters ?? new List<JsonConverter>()).ToArray());
-            var bytes = Encoding.GetBytes(json);
-            stream.Write(bytes, 0, bytes.Length);
-        }
+			return ReferenceEquals(payload, null) ? JValue.CreateNull() : JToken.FromObject(payload, serializer);
+		}
 
-        public object Deserialize(JToken payload, Type targetType)
-        {
-            if (payload is JValue value)
-            {
-                return value.Value;
-            }
+		public void Serialize(object payload, Stream stream)
+		{
+			var json = JToken.FromObject(payload, serializer).ToString(settings.Formatting, (settings.Converters ?? new List<JsonConverter>()).ToArray());
+			var bytes = Encoding.GetBytes(json);
+			stream.Write(bytes, 0, bytes.Length);
+		}
 
-            return JsonConvert.DeserializeObject(payload.ToString(), targetType);
-        }
+		public object Deserialize(JToken payload, Type targetType)
+		{
+			if (payload is JValue value)
+			{
+				return value.Value;
+			}
 
-        public object Deserialize(Stream payload)
-        {
-            var memoryStream = new MemoryStream();
-            payload.CopyTo(memoryStream);
-            var bytes = memoryStream.ToArray();
+			return JsonConvert.DeserializeObject(payload.ToString(), targetType, settings);
+		}
 
-            if (bytes.Length == 0)
-            {
-                return null;
-            }
+		public object Deserialize(Stream payload)
+		{
+			var memoryStream = new MemoryStream();
+			payload.CopyTo(memoryStream);
+			var bytes = memoryStream.ToArray();
 
-            var json = Encoding.GetString(bytes);
+			if (bytes.Length == 0)
+			{
+				return null;
+			}
 
-            return Deserialize(JToken.Parse(json), null);
-        }
+			var json = Encoding.GetString(bytes);
 
-        public string MimeType => "application/json";
-    }
+			return Deserialize(JToken.Parse(json), null);
+		}
+
+		public string MimeType => "application/json";
+
+		public static JsonSerializerSettings CreateDefaultSettings()
+		{
+			var settings = new JsonSerializerSettings();
+			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+			return settings;
+		}
+	}
 }

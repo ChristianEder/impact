@@ -11,24 +11,22 @@ namespace Impact.Provider
 	public class Interaction
     {
         private readonly ITransport transport;
-        private readonly ITransportMatchers transportMatchers;
         private readonly string description;
         private string providerState;
         private readonly object request;
         private readonly object response;
         private readonly IMatcher[] matchers;
 
-        internal Interaction(JObject i, ITransport transport, ITransportMatchers transportMatchers)
+        internal Interaction(JObject i, ITransport transport)
         {
             this.transport = transport;
-            this.transportMatchers = transportMatchers;
-            description = i["description"].ToString();
-            providerState = i["providerState"].ToString();
+            description = i["description"]?.ToString() ?? "";
+            providerState = i["providerState"]?.ToString() ?? "";
             request = transport.Format.DeserializeRequest(i["request"]);
             response = transport.Format.DeserializeResponse(i["response"]);
 
             matchers = i["matchingRules"] is JObject rules ? MatcherParser.Parse(rules): new IMatcher[0];
-            matchers = transportMatchers.ResponseMatchers.Concat(matchers).ToArray();
+            matchers = transport.Matchers.ResponseMatchers.Concat(matchers).ToArray();
         }
 
         public async Task<InteractionVerificationResult> Honour()
@@ -40,7 +38,6 @@ namespace Impact.Provider
             checker.Matches(response, actualResponse, context);
 
             return new InteractionVerificationResult(description, context.Result.Matches, context.Result.FailureReasons);
-
         }
     }
 

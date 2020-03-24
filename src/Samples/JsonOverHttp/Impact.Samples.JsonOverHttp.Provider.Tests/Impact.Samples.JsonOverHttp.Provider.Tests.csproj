@@ -16,6 +16,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Impact.Core.Payload.Json\Impact.Core.Payload.Json.csproj" />
+    <ProjectReference Include="..\..\..\Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj" />
+    <ProjectReference Include="..\..\..\Impact.Provider\Impact.Provider.csproj" />
+  </ItemGroup>
   
 
 </Project>

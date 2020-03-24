@@ -1,4 +1,5 @@
-﻿using Impact.Core.Serialization;
+﻿using Impact.Core;
+using Impact.Core.Serialization;
 using Impact.Core.Transport.Http;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,17 @@ namespace Impact.Provider.Transport.Http
 		private readonly HttpClient httpClient;
 		private readonly IPayloadFormat payloadFormat;
 
-		public HttpTransport(HttpClient httpClient, IPayloadFormat payloadFormat)
+		public HttpTransport(HttpClient httpClient, IPayloadFormat payloadFormat, ITransportMatchers matchers = null)
 		{
 			Format = new HttpTransportFormat(payloadFormat);
+			Matchers = matchers ?? new HttpTransportMatchers();
 			this.httpClient = httpClient;
 			this.payloadFormat = payloadFormat;
 		}
 
 		public ITransportFormat Format { get; }
+
+		public ITransportMatchers Matchers { get; }
 
 		public async Task<object> Respond(object requestObject)
 		{
@@ -29,10 +33,13 @@ namespace Impact.Provider.Transport.Http
 
 			var requestMessage = new HttpRequestMessage();
 			requestMessage.Method = request.Method;
-			requestMessage.RequestUri = new Uri(request.Path + (string.IsNullOrEmpty(request.Query) ? "" : ("?" + request.Query)));
-			foreach (var header in request.Headers)
+			requestMessage.RequestUri = new Uri(request.Path + (string.IsNullOrEmpty(request.Query) ? "" : ("?" + request.Query)), UriKind.Relative);
+			if(request.Headers != null)
 			{
-				requestMessage.Headers.Add(header.Key, header.Value);
+				foreach (var header in request.Headers)
+				{
+					requestMessage.Headers.Add(header.Key, header.Value);
+				}
 			}
 			if (!ReferenceEquals(null, request.Body))
 			{

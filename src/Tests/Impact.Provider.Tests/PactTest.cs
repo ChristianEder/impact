@@ -22,7 +22,7 @@ namespace Impact.Provider.Tests
 			{
 				return responder(JsonConvert.DeserializeObject<Request>(request.ToString()));
 			});
-			pact = new Pact(PublishedPact.Get(), transport, new NoTransportMatchers());
+			pact = new Pact(PublishedPact.Get(), transport);
 		}
 
 		[Fact]

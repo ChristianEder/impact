@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Impact.Core;
@@ -14,13 +13,13 @@ namespace Impact.Provider
         private string consumer;
         private Interaction[] interactions;
 
-        public Pact(string pactJson, ITransport transport, ITransportMatchers transportMatchers)
+        public Pact(string pactJson, ITransport transport)
         {
             var pact = JObject.Parse(pactJson);
             provider = pact["provider"].ToString();
             consumer = pact["consumer"].ToString();
 
-            interactions = pact["interactions"].Cast<JObject>().Select(i => new Interaction(i, transport, transportMatchers)).ToArray();
+            interactions = pact["interactions"].Cast<JObject>().Select(i => new Interaction(i, transport)).ToArray();
         }
 
         public async Task<VerificationResult> Honour()

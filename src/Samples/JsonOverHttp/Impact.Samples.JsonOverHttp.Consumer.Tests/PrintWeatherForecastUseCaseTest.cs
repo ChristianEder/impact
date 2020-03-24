@@ -44,7 +44,7 @@ namespace Impact.Samples.JsonOverHttp.Consumer.Tests
 						}
 					};
 				})
-				.WithResponseMatchingRule(r => ((WeatherForecast)r.Body).City, r => r.Type());
+				.WithResponseMatchingRule(r => ((WeatherForecast)r.Body), r => r.Type());
 
 			server = new HttpMockServer(pact, new JsonPayloadFormat());
 			server.Start();
@@ -74,6 +74,8 @@ namespace Impact.Samples.JsonOverHttp.Consumer.Tests
 
 		public void Dispose()
 		{
+			// In a real world scenario, you'd now publish the pact file to a pact broker or other central repository
+			var pactFile = pact.ToPactFile("Weather Forecast consumer", "Weather Forecast API", server.TransportFormat);
 			server.Dispose();
 		}
 	}
