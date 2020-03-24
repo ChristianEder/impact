@@ -19,13 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Tests.Shared", "Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Tests", "Tests\Impact.Core.Tests\Impact.Core.Tests.csproj", "{F1DD9383-9E5D-4217-B57E-74D34350E5D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Payload.Json", "Impact.Core.Payload.Json\Impact.Core.Payload.Json.csproj", "{AE325475-D124-429E-93A8-320C104288B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Payload.Json", "Impact.Core.Payload.Json\Impact.Core.Payload.Json.csproj", "{AE325475-D124-429E-93A8-320C104288B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Transport.Http", "Impact.Core.Transport.Http\Impact.Core.Transport.Http.csproj", "{69D033C9-4062-4796-B4D9-BDDD7C8C4483}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Transport.Http", "Impact.Core.Transport.Http\Impact.Core.Transport.Http.csproj", "{69D033C9-4062-4796-B4D9-BDDD7C8C4483}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Consumer.Transport.Http", "Impact.Consumer.Transport.Http\Impact.Consumer.Transport.Http.csproj", "{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Consumer.Transport.Http", "Impact.Consumer.Transport.Http\Impact.Consumer.Transport.Http.csproj", "{1BFB20C2-B70F-4BB1-9087-FBA9ADF22837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Provider.Transport.Http", "Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj", "{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Provider.Transport.Http", "Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj", "{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Payload.Protobuf", "Impact.Core.Payload.Protobuf\Impact.Core.Payload.Protobuf.csproj", "{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
