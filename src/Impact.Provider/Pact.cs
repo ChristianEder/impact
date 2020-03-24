@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Impact.Core;
+using Impact.Provider.Transport;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Provider
@@ -12,22 +14,22 @@ namespace Impact.Provider
         private string consumer;
         private Interaction[] interactions;
 
-        public Pact(string pactJson, IRequestResponseDeserializer deserializer, ITransportMatchers transportMatchers)
+        public Pact(string pactJson, ITransport transport, ITransportMatchers transportMatchers)
         {
             var pact = JObject.Parse(pactJson);
             provider = pact["provider"].ToString();
             consumer = pact["consumer"].ToString();
 
-            interactions = pact["interactions"].Cast<JObject>().Select(i => new Interaction(i, deserializer, transportMatchers)).ToArray();
+            interactions = pact["interactions"].Cast<JObject>().Select(i => new Interaction(i, transport, transportMatchers)).ToArray();
         }
 
-        public VerificationResult Honour(Func<object, object> sendRequest)
+        public async Task<VerificationResult> Honour()
         {
             var result = new VerificationResult();
 
             foreach (var interaction in interactions)
             {
-                result.Add(interaction.Honour(sendRequest));
+                result.Add(await interaction.Honour());
             }
 
             return result;

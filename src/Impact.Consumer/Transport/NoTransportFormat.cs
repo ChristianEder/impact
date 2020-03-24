@@ -1,13 +1,13 @@
 ﻿using Impact.Core.Serialization;
 using Newtonsoft.Json.Linq;
 
-namespace Impact.Consumer.Transport.Callbacks
+namespace Impact.Consumer.Transport
 {
-    public class CallbackTransportFormat : ITransportFormat
+    public class NoTransportFormat : ITransportFormat
     {
         private readonly IPayloadFormat payloadFormat;
 
-        public CallbackTransportFormat(IPayloadFormat payloadFormat)
+        public NoTransportFormat(IPayloadFormat payloadFormat)
         {
             this.payloadFormat = payloadFormat;
         }

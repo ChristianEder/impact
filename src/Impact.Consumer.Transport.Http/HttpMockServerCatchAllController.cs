@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Impact.Core;
 using Impact.Core.Serialization;
-using Impact.Core.Transport.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;

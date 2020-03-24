@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Impact.Core;
 using Impact.Core.Matchers;
+using Impact.Provider.Transport;
 using Newtonsoft.Json.Linq;
 
 namespace Impact.Provider
 {
-    public class Interaction
+	public class Interaction
     {
+        private readonly ITransport transport;
         private readonly ITransportMatchers transportMatchers;
         private readonly string description;
         private string providerState;
@@ -15,21 +18,22 @@ namespace Impact.Provider
         private readonly object response;
         private readonly IMatcher[] matchers;
 
-        internal Interaction(JObject i, IRequestResponseDeserializer deserializer, ITransportMatchers transportMatchers)
+        internal Interaction(JObject i, ITransport transport, ITransportMatchers transportMatchers)
         {
+            this.transport = transport;
             this.transportMatchers = transportMatchers;
             description = i["description"].ToString();
             providerState = i["providerState"].ToString();
-            request = deserializer.DeserializeRequest(i["request"]);
-            response = deserializer.DeserializeResponse(i["response"]);
+            request = transport.Format.DeserializeRequest(i["request"]);
+            response = transport.Format.DeserializeResponse(i["response"]);
 
             matchers = i["matchingRules"] is JObject rules ? MatcherParser.Parse(rules): new IMatcher[0];
             matchers = transportMatchers.ResponseMatchers.Concat(matchers).ToArray();
         }
 
-        public InteractionVerificationResult Honour(Func<object, object> sendRequest)
+        public async Task<InteractionVerificationResult> Honour()
         {
-            var actualResponse = sendRequest(request);
+            var actualResponse = await transport.Respond(request);
             var context = new MatchingContext(matchers, false);
             var checker = new MatchChecker();
 

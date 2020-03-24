@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj" />
     <ProjectReference Include="..\..\Impact.Provider\Impact.Provider.csproj" />
     <ProjectReference Include="..\Impact.Consumer.Tests\Impact.Consumer.Tests.csproj" />
     <ProjectReference Include="..\Impact.Tests.Shared\Impact.Tests.Shared.csproj" />

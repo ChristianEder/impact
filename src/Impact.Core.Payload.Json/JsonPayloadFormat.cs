@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Impact.Core.Payload.Json
@@ -25,7 +27,14 @@ namespace Impact.Core.Payload.Json
 
         public JToken Serialize(object payload)
         {
-            return JToken.Parse(JsonConvert.SerializeObject(payload));
+            return JToken.FromObject(payload);
+        }
+
+        public void Serialize(object payload, Stream stream)
+        {
+            var json = JToken.FromObject(payload).ToString(settings.Formatting, (settings.Converters ?? new List<JsonConverter>()).ToArray());
+            var bytes = Encoding.GetBytes(json);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         public object Deserialize(JToken payload, Type targetType)
@@ -51,7 +60,7 @@ namespace Impact.Core.Payload.Json
 
             var json = Encoding.GetString(bytes);
 
-            return JsonConvert.DeserializeObject(json, settings);
+            return Deserialize(JToken.Parse(json), null);
         }
 
         public string MimeType => "application/json";

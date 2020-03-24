@@ -11,6 +11,7 @@ namespace Impact.Core.Serialization
     {
         Encoding Encoding { get; }
         JToken Serialize(object payload);
+        void Serialize(object payload, Stream stream);
         object Deserialize(JToken payload, Type targetType);
         object Deserialize(Stream payload);
         string MimeType { get; }

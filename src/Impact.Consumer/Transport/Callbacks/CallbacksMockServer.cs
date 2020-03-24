@@ -5,11 +5,12 @@ namespace Impact.Consumer.Transport.Callbacks
     public class CallbacksMockServer
     {
         private readonly Pact pact;
-        private readonly ITransportMatchers matchers = new NoTransportMatchers();
+        private readonly ITransportMatchers matchers;
 
-        public CallbacksMockServer(Pact pact)
+        public CallbacksMockServer(Pact pact, ITransportMatchers matchers = null)
         {
             this.pact = pact;
+            this.matchers = matchers ?? new NoTransportMatchers();
         }
 
         public TResponse SendRequest<TRequest, TResponse>(TRequest request)
