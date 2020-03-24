@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -62,10 +63,10 @@ namespace Impact.Consumer.Transport.Http
 
                 response = (Core.Transport.Http.HttpResponse)interaction.Respond(request, transportMatchers);
             }
-            catch
+            catch(Exception ex)
             {
                 Response.StatusCode = 404;
-                var bytes = Encoding.UTF8.GetBytes("Getting a response from the pact failed for this request");
+                var bytes = Encoding.UTF8.GetBytes("Getting a response from the pact failed for this request. Exception: " + Environment.NewLine + ex);
                 await Response.Body.WriteAsync(bytes, 0, bytes.Length);
                 return;
             }
