@@ -87,7 +87,7 @@ namespace Impact.Consumer.Transport.Http
                     Response.ContentType = payloadFormat.MimeType;
                 }
 
-                await Response.WriteAsync(payloadFormat.Serialize(response.Body).ToString(), payloadFormat.Encoding);
+                payloadFormat.Serialize(response.Body, Response.Body);
             }
         }
     }

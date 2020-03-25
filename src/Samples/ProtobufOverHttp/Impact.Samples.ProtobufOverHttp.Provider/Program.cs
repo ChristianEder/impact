@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Impact.Samples.JsonOverHttp.Provider
+namespace Impact.Samples.ProtobufOverHttp.Provider
 {
 	public class Program
 	{

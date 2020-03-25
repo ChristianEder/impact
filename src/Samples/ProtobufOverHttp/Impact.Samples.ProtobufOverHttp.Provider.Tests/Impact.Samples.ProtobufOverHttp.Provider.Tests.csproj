@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Impact.Core.Payload.Protobuf\Impact.Core.Payload.Protobuf.csproj" />
+    <ProjectReference Include="..\..\..\Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj" />
+    <ProjectReference Include="..\..\..\Impact.Provider\Impact.Provider.csproj" />
+    <ProjectReference Include="..\Impact.Samples.ProtobufOverHttp.Provider\Impact.Samples.ProtobufOverHttp.Provider.csproj" />
+  </ItemGroup>
+  
+
+</Project>

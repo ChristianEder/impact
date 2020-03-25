@@ -62,7 +62,12 @@ namespace Impact.Core.Payload.Protobuf
 
 		public void Serialize(object payload, Stream stream)
 		{
-			var bytes = Encoding.GetBytes(Serialize(payload).ToString());
+			if (!(payload is TMessage message))
+			{
+				throw new NotSupportedException("ProtobufPayloadFormat expects the payload to be an instance of " + typeof(TMessage).FullName);
+			}
+
+			var bytes = message.ToByteArray();
 			stream.Write(bytes, 0, bytes.Length);
 		}
 

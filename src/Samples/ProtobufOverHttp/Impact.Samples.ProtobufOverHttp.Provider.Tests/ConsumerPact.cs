@@ -1,4 +1,4 @@
-﻿namespace Impact.Samples.JsonOverHttp.Provider.Tests
+﻿namespace Impact.Samples.ProtobufOverHttp.Provider.Tests
 {
     internal static class ConsumerPact
 	{
@@ -20,18 +20,11 @@
         ""method"": {
           ""Method"": ""GET""
         },
-        ""path"": ""weatherforecast/Munich/3"",
-        ""body"": null
+        ""path"": ""weatherforecast/Munich/3""
       },
       ""response"": {
         ""status"": 200,
-        ""body"": {
-          ""city"": ""Munich"",
-          ""date"": ""2020-03-24T00:00:00"",
-          ""temperatureC"": 24,
-          ""temperatureF"": 75,
-          ""summary"": ""Sunny""
-        }
+        ""body"": ""CgZNdW5pY2gQGBhLIgVTdW5ueSoGCICb5fMF""
       },
       ""matchingRules"": {
         ""$.Body"": [

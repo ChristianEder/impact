@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Impact.Samples.JsonOverHttp.Consumer": {
+      "commandName": "Project",
+      "commandLineArgs": "Munich"
+    }
+  }
+}

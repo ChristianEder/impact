@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Consumer.Transport.H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Provider.Transport.Http", "Impact.Provider.Transport.Http\Impact.Provider.Transport.Http.csproj", "{9A3AE9E0-710A-4E06-A55C-94E73EF3A943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Core.Payload.Protobuf", "Impact.Core.Payload.Protobuf\Impact.Core.Payload.Protobuf.csproj", "{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Core.Payload.Protobuf", "Impact.Core.Payload.Protobuf\Impact.Core.Payload.Protobuf.csproj", "{3BFBDE32-6F1C-462D-AE25-91C8FD9522BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{CCCE313E-F7E3-48B6-A9AB-F2E57F3822FF}"
 EndProject
@@ -35,13 +35,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JsonOverHttp", "JsonOverHtt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProtobufOverHttp", "ProtobufOverHttp", "{CB5234FA-795F-4A09-B091-88E32E830E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Samples.JsonOverHttp.Provider", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Provider\Impact.Samples.JsonOverHttp.Provider.csproj", "{F8E469C7-C006-47E9-A687-92944D4FA319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.JsonOverHttp.Provider", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Provider\Impact.Samples.JsonOverHttp.Provider.csproj", "{F8E469C7-C006-47E9-A687-92944D4FA319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Samples.JsonOverHttp.Consumer", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Consumer\Impact.Samples.JsonOverHttp.Consumer.csproj", "{357BA0E9-AC3E-415D-B430-BE36DEDAD953}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.JsonOverHttp.Consumer", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Consumer\Impact.Samples.JsonOverHttp.Consumer.csproj", "{357BA0E9-AC3E-415D-B430-BE36DEDAD953}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Samples.JsonOverHttp.Consumer.Tests", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Consumer.Tests\Impact.Samples.JsonOverHttp.Consumer.Tests.csproj", "{FD6A6590-ADBC-4B59-A8A2-396DB9F311D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.JsonOverHttp.Consumer.Tests", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Consumer.Tests\Impact.Samples.JsonOverHttp.Consumer.Tests.csproj", "{FD6A6590-ADBC-4B59-A8A2-396DB9F311D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Samples.JsonOverHttp.Provider.Tests", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Provider.Tests\Impact.Samples.JsonOverHttp.Provider.Tests.csproj", "{11B10194-A801-41E5-9AA9-72B0111E4F6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.JsonOverHttp.Provider.Tests", "Samples\JsonOverHttp\Impact.Samples.JsonOverHttp.Provider.Tests\Impact.Samples.JsonOverHttp.Provider.Tests.csproj", "{11B10194-A801-41E5-9AA9-72B0111E4F6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.ProtobufOverHttp.Consumer", "Samples\ProtobufOverHttp\Impact.Samples.ProtobufOverHttp.Consumer\Impact.Samples.ProtobufOverHttp.Consumer.csproj", "{0DAF2391-852B-4168-973B-75EE14565908}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.ProtobufOverHttp.Consumer.Tests", "Samples\ProtobufOverHttp\Impact.Samples.ProtobufOverHttp.Consumer.Tests\Impact.Samples.ProtobufOverHttp.Consumer.Tests.csproj", "{7D07AF3F-98E2-44B8-93FC-996318A4B181}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.ProtobufOverHttp.Provider", "Samples\ProtobufOverHttp\Impact.Samples.ProtobufOverHttp.Provider\Impact.Samples.ProtobufOverHttp.Provider.csproj", "{77B6256E-7365-41D2-9233-A2A50897B5A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Impact.Samples.ProtobufOverHttp.Provider.Tests", "Samples\ProtobufOverHttp\Impact.Samples.ProtobufOverHttp.Provider.Tests\Impact.Samples.ProtobufOverHttp.Provider.Tests.csproj", "{729C9570-052D-48E4-A259-21651709C0FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +121,22 @@ Global
 		{11B10194-A801-41E5-9AA9-72B0111E4F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11B10194-A801-41E5-9AA9-72B0111E4F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11B10194-A801-41E5-9AA9-72B0111E4F6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DAF2391-852B-4168-973B-75EE14565908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DAF2391-852B-4168-973B-75EE14565908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DAF2391-852B-4168-973B-75EE14565908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DAF2391-852B-4168-973B-75EE14565908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D07AF3F-98E2-44B8-93FC-996318A4B181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D07AF3F-98E2-44B8-93FC-996318A4B181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D07AF3F-98E2-44B8-93FC-996318A4B181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D07AF3F-98E2-44B8-93FC-996318A4B181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77B6256E-7365-41D2-9233-A2A50897B5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77B6256E-7365-41D2-9233-A2A50897B5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77B6256E-7365-41D2-9233-A2A50897B5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77B6256E-7365-41D2-9233-A2A50897B5A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729C9570-052D-48E4-A259-21651709C0FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729C9570-052D-48E4-A259-21651709C0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729C9570-052D-48E4-A259-21651709C0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729C9570-052D-48E4-A259-21651709C0FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +152,10 @@ Global
 		{357BA0E9-AC3E-415D-B430-BE36DEDAD953} = {92FE52A0-F061-47F7-9567-174DF6927223}
 		{FD6A6590-ADBC-4B59-A8A2-396DB9F311D6} = {92FE52A0-F061-47F7-9567-174DF6927223}
 		{11B10194-A801-41E5-9AA9-72B0111E4F6D} = {92FE52A0-F061-47F7-9567-174DF6927223}
+		{0DAF2391-852B-4168-973B-75EE14565908} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
+		{7D07AF3F-98E2-44B8-93FC-996318A4B181} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
+		{77B6256E-7365-41D2-9233-A2A50897B5A6} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
+		{729C9570-052D-48E4-A259-21651709C0FB} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {31B0589A-E8A9-4614-AD95-AF66850E9BA2}

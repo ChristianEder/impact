@@ -1,0 +1,12 @@
+syntax = "proto3";
+option csharp_namespace = "Impact.Samples.ProtobufOverHttp.Model";
+
+import "google/protobuf/timestamp.proto";
+
+message WeatherForecast {
+    string City = 1;
+    int32 TemperatureC = 2;
+    int32 TemperatureF = 3;
+    string Summary = 4;
+    google.protobuf.Timestamp Date = 5;
+}
