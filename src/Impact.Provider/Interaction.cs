@@ -9,49 +9,57 @@ using Newtonsoft.Json.Linq;
 namespace Impact.Provider
 {
 	public class Interaction
-    {
-        private readonly ITransport transport;
-        private readonly string description;
-        private string providerState;
-        private readonly object request;
-        private readonly object response;
-        private readonly IMatcher[] matchers;
+	{
+		private readonly ITransport transport;
+		private readonly Func<string, Task> ensureProviderState;
+		private readonly string description;
+		private string providerState;
+		private readonly object request;
+		private readonly object response;
+		private readonly IMatcher[] matchers;
 
-        internal Interaction(JObject i, ITransport transport)
-        {
-            this.transport = transport;
-            description = i["description"]?.ToString() ?? "";
-            providerState = i["providerState"]?.ToString() ?? "";
-            request = transport.Format.DeserializeRequest(i["request"]);
-            response = transport.Format.DeserializeResponse(i["response"]);
+		internal Interaction(JObject i, ITransport transport, System.Func<string, Task> ensureProviderState)
+		{
+			this.transport = transport;
+			this.ensureProviderState = ensureProviderState;
+			description = i["description"]?.ToString() ?? "";
+			providerState = i["providerState"]?.ToString() ?? "";
+			request = transport.Format.DeserializeRequest(i["request"]);
+			response = transport.Format.DeserializeResponse(i["response"]);
 
-            matchers = i["matchingRules"] is JObject rules ? MatcherParser.Parse(rules): new IMatcher[0];
-            matchers = transport.Matchers.ResponseMatchers.Concat(matchers).ToArray();
-        }
+			matchers = i["matchingRules"] is JObject rules ? MatcherParser.Parse(rules) : new IMatcher[0];
+			matchers = transport.Matchers.ResponseMatchers.Concat(matchers).ToArray();
+		}
 
-        public async Task<InteractionVerificationResult> Honour()
-        {
-            var actualResponse = await transport.Respond(request);
-            var context = new MatchingContext(matchers, false);
-            var checker = new MatchChecker();
+		public async Task<InteractionVerificationResult> Honour()
+		{
+			if (!string.IsNullOrEmpty(providerState))
+			{
+				await ensureProviderState(providerState);
+			}
 
-            checker.Matches(response, actualResponse, context);
+			var actualResponse = await transport.Respond(request);
+			var context = new MatchingContext(matchers, false);
+			var checker = new MatchChecker();
 
-            return new InteractionVerificationResult(description, context.Result.Matches, context.Result.FailureReasons);
-        }
-    }
+			var roundTrippedResponse = transport.Format.DeserializeResponse(transport.Format.SerializeResponse(actualResponse));
+			checker.Matches(response, roundTrippedResponse, context);
 
-    public class InteractionVerificationResult
-    {
-        public InteractionVerificationResult(string description, bool success, string failureReason = null)
-        {
-            Description = description;
-            Success = success;
-            FailureReason = failureReason;
-        }
+			return new InteractionVerificationResult(description, context.Result.Matches, context.Result.FailureReasons);
+		}
+	}
 
-        public string Description { get; }
-        public bool Success { get; }
-        public string FailureReason { get; }
-    }
+	public class InteractionVerificationResult
+	{
+		public InteractionVerificationResult(string description, bool success, string failureReason = null)
+		{
+			Description = description;
+			Success = success;
+			FailureReason = failureReason;
+		}
+
+		public string Description { get; }
+		public bool Success { get; }
+		public string FailureReason { get; }
+	}
 }

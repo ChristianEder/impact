@@ -2,6 +2,7 @@
 using Impact.Core.Transport.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Impact.Provider.Transport.Http
 {
@@ -45,6 +46,22 @@ namespace Impact.Provider.Transport.Http
 			}
 
 			return response;
+		}
+
+		public JToken SerializeResponse(object response)
+		{
+			var httpResponse = (HttpResponse)response;
+			var body = httpResponse.Body;
+			httpResponse.Body = null;
+
+			var json = JObject.FromObject(httpResponse);
+
+			if (body != null)
+			{
+				json["body"] = payloadFormat.Serialize(body);
+			}
+
+			return json;
 		}
 	}
 }

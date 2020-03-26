@@ -19,7 +19,7 @@ namespace Impact.Samples.ProtobufOverHttp.Provider.Tests
 		{
 			client = new HttpClient();
 			client.BaseAddress = new Uri("http://localhost:60374/");
-			pact = new Pact(ConsumerPact.GetPactFile(), new HttpTransport(client, new ProtobufPayloadFormat<WeatherForecast>()));
+			pact = new Pact(ConsumerPact.GetPactFile(), new HttpTransport(client, new ProtobufPayloadFormat<WeatherForecast>()), s => Task.CompletedTask);
 		}
 
 		[Fact]

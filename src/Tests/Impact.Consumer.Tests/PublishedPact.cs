@@ -44,11 +44,11 @@ namespace Impact.Consumer.Tests
 					Type = "Foo",
 					Ids = { "1" }
 				})
-				.WithRequestArrayMatchingRule(r => r.Ids, i => i.LengthMin(1).All().Regex("[1-9][0-9]*"))
+				.WithRequestArrayMatchingRule(r => r.Ids, i => i.LengthMin(1).All().Regex("^[1-9][0-9]*$"))
 				.WillRespondWith(requestHandler ?? ValidRequestHandler)
 				.WithResponseArrayMatchingRule(r => r.Bars, b => b.LengthMax(0))
 				.WithResponseArrayMatchingRule(r => r.Foos, r => r.At(0).With(f => f.Size, s => s.TypeMin(0)))
-				.WithResponseArrayMatchingRule(r => r.Foos, r => r.All().With(f => f.Id, i => i.Type()));
+				.WithResponseArrayMatchingRule(r => r.Foos, r => r.All().With(f => f.Id, i => i.Regex("^[1-9][0-9]*$")));
 
 			pact
 				.Given("A bar with id 12 exists")
@@ -58,11 +58,11 @@ namespace Impact.Consumer.Tests
 					Type = "Bar",
 					Ids = { "12" }
 				})
-				.WithRequestArrayMatchingRule(r => r.Ids, i => i.LengthMin(1).All().Regex("[1-9][0-9]*"))
+				.WithRequestArrayMatchingRule(r => r.Ids, i => i.LengthMin(1).All().Regex("^[1-9][0-9]*$"))
 				.WillRespondWith(requestHandler ?? ValidRequestHandler)
 				.WithResponseArrayMatchingRule(r => r.Foos, b => b.LengthMax(0))
 				.WithResponseArrayMatchingRule(r => r.Bars, r => r.At(0).With(f => f.Name, s => s.Type()))
-				.WithResponseArrayMatchingRule(r => r.Bars, r => r.All().With(f => f.Id, i => i.Type()));
+				.WithResponseArrayMatchingRule(r => r.Bars, r => r.All().With(f => f.Id, i => i.Regex("^[1-9][0-9]*$")));
 
 			return pact;
 		}

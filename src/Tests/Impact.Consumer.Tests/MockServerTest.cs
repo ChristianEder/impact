@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Linq;
+using Impact.Consumer.Transport;
 using Impact.Consumer.Transport.Callbacks;
+using Impact.Core.Payload.Json;
 using Impact.Tests.Shared;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Impact.Consumer.Tests
@@ -56,7 +60,33 @@ namespace Impact.Consumer.Tests
         [Fact]
         public void GeneratesValidAndCompletePactFile()
         {
-            throw new NotImplementedException();
+            var pact = PublishedPact.DefinePact();
+            var pactFile = JObject.Parse(pact.ToPactFile("consumer", "provider", new NoTransportFormat(new JsonPayloadFormat())));
+
+            Assert.Equal("consumer", pactFile["consumer"]["name"].ToString());
+            Assert.Equal("provider", pactFile["provider"]["name"].ToString());
+
+            var interactions = pactFile["interactions"] as JArray;
+
+            Assert.NotNull(interactions);
+            Assert.Equal(2, interactions.Count);
+
+            var rules = interactions[0]["matchingRules"] as JObject;
+
+            Assert.NotNull(rules);
+            Assert.Equal(3, rules.Properties().Count());
+
+            foreach (var ruleProperty in rules.Properties())
+            {
+                var rule = ruleProperty.Value as JArray;
+                Assert.NotNull(rule);
+                Assert.Single(rule);
+
+                var expectedType = ruleProperty.Name.ToLowerInvariant().EndsWith(".id")
+                    ? "regex"
+                    : "type";
+                Assert.Equal(expectedType, rule[0]["match"].ToString());
+            }
         }
     }
 }

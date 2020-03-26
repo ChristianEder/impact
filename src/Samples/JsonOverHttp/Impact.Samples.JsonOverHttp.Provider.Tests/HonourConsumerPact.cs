@@ -18,7 +18,7 @@ namespace Impact.Samples.JsonOverHttp.Provider.Tests
 		{
 			client = new HttpClient();
 			client.BaseAddress = new Uri("http://localhost:60374/");
-			pact = new Pact(ConsumerPact.GetPactFile(), new HttpTransport(client, new JsonPayloadFormat()));
+			pact = new Pact(ConsumerPact.GetPactFile(), new HttpTransport(client, new JsonPayloadFormat()), s => Task.CompletedTask);
 		}
 
 		[Fact]

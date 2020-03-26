@@ -7,5 +7,6 @@ namespace Impact.Provider.Transport
 	{
 		object DeserializeRequest(JToken request);
 		object DeserializeResponse(JToken response);
+		JToken SerializeResponse(object response);
 	}
 }

@@ -4,7 +4,7 @@ namespace Impact.Core.Matchers
 {
     public class PropertyPathPart : IPropertyPathPart
     {
-        public PropertyPathPart(string value, bool ignoreCase = false)
+        public PropertyPathPart(string value)
         {
             Value = value;
         }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Impact.Consumer.Tests;
-using Impact.Core;
 using Impact.Core.Payload.Json;
 using Impact.Provider.Transport;
 using Impact.Provider.Transport.Callbacks;
-using Impact.Provider.Transport.Http;
 using Impact.Tests.Shared;
 using Newtonsoft.Json;
 using Xunit;
@@ -22,26 +20,30 @@ namespace Impact.Provider.Tests
 			{
 				return responder(JsonConvert.DeserializeObject<Request>(request.ToString()));
 			});
-			pact = new Pact(PublishedPact.Get(), transport);
+			pact = new Pact(PublishedPact.Get(), transport, s => Task.CompletedTask);
 		}
 
 		[Fact]
-		public async Task PassesWhenPactIsHonoured()
+		public async Task<VerificationResult> PassesWhenPactIsHonoured()
 		{
 			GivenAPact(PublishedPact.ValidRequestHandler);
 
 			var verificationResult = await pact.Honour();
 
 			Assert.True(verificationResult.Success);
+
+			return verificationResult;
 		}
 
 		[Fact]
-		public async Task FailsWhenPactIsNotHonoured()
+		public async Task<VerificationResult> FailsWhenPactIsNotHonoured()
 		{
 			GivenAPact(request => new Response());
 			var verificationResult = await pact.Honour();
 			
-			Assert.False(verificationResult.Success);			
+			Assert.False(verificationResult.Success);
+
+			return verificationResult;
 		}
 
 		[Fact]
@@ -49,7 +51,7 @@ namespace Impact.Provider.Tests
 		{
 			GivenAPact(request =>
 			{
-				var response = PublishedPact.ValidRequestHandler((Request)request);
+				var response = PublishedPact.ValidRequestHandler(request);
 				response.Foos.ForEach(f => f.Id = Guid.NewGuid().ToString());
 				response.Bars.ForEach(b => b.Id = Guid.NewGuid().ToString());
 				return response;
@@ -59,15 +61,17 @@ namespace Impact.Provider.Tests
 		}
 
 		[Fact]
-		public void CreatesAValidVerificationFileWhenPassing()
+		public async Task CreatesAValidVerificationFileWhenPassing()
 		{
-			throw new NotImplementedException();
+			var result = await PassesWhenPactIsHonoured();
+			// TBD
 		}
 
 		[Fact]
-		public void CreatesAValidVerificationFileWhenFailing()
+		public async Task CreatesAValidVerificationFileWhenFailing()
 		{
-			throw new NotImplementedException();
+			var result = await FailsWhenPactIsNotHonoured();
+			// TBD
 		}
 	}
 }

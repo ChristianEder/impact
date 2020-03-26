@@ -20,5 +20,10 @@ namespace Impact.Provider.Transport
         {
             return payloadFormat.Deserialize(response, null);
         }
+
+        public JToken SerializeResponse(object response)
+        {
+            return payloadFormat.Serialize(response);
+        }
     }
 }
