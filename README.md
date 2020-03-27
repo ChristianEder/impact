@@ -28,6 +28,87 @@ The concept of consumer drive contract testing involves two parties to add a spe
 
 ## Implementing a consumer test
 
+We'll look into writing a consumer test for an application consuming an API that uses JSON serialized payload over an HTTP connection. In our scenario, the API provides weather forecasts, and the consuming application prints those forecast to the console.
+
+You will have to start by defining the consumers expectations in terms of which requests it will send and what responses it expects to get from the API:
+
+```cs
+var pact = new Pact();
+// Define a new expected interactio for requesting the weather forecast data. 
+// Our example API only has this one endpoint. In a real world
+// scenario, you'll most likely have multiple definitions like the following. 
+pact.Given("")
+    .UponReceiving("A weather forecast request")
+    // Define an example request the consumer will be sending
+    .With(new HttpRequest
+    {
+        Method = System.Net.Http.HttpMethod.Get,
+        Path = "weatherforecast/Munich/3"
+    })
+    // If your test cases that will be run later will send
+    // Requests that do not exactly match the provided example
+    // request, you can use request matching rules to 
+    // further define the generalized shape of your request
+    .WithRequestMatchingRule(r => r.Path, r => r.Regex(pathFormat.ToString()))
+    // Define how you expect the API to respond to the give request
+    // This callback will be used later when setting up
+    // the mocked API server
+    .WillRespondWith(request =>
+    {
+        var match = pathFormat.Match(request.Path);
+        return new HttpResponse
+        {
+            Status = System.Net.HttpStatusCode.OK,
+            Body = new WeatherForecast
+            {
+                City = match.Groups[1].Value,
+                Date = new DateTime(2020, 3, 24),
+                Summary = "Sunny",
+                TemperatureC = 24,
+                TemperatureF = 75
+            }
+        };
+    })
+    // Define your expectations regarding the response provided
+    // by the API. The following matching rule means
+    // that you expect every field of the body to have the same
+    // type as the fields you provided in the response
+    // callback above.
+    .WithResponseMatchingRule(r => ((WeatherForecast)r.Body), r => r.Type());
+```
+
+Now, you'll need to start a mock API server that you can use to test the consuming application against:
+
+```cs
+// Create an new mock server, providing the Pact 
+// that contains all the expected requests and responses,
+// And the payload format
+var server = new HttpMockServer(pact, new JsonPayloadFormat());
+server.Start();
+```
+
+Now you can use the mock server to instantiate an HttpClient to be used in your tests:
+
+```cs
+[Fact]
+public async Task ShouldPrintTheForecast()
+{
+    var console = new TestConsole();
+    // This HttpClient instance will access the mock
+    // server we set up above
+    var httpClient = server.CreateClient();
+    var useCase = new PrintWeatherForecastUseCase(new WeatherForecastApiClient(httpClient), console);
+
+    await useCase.Print("Berlin");
+
+    // The message printed to the console should now contain
+    // - the city name we provided in this test case
+    // - the date we provided when setting up the Pact response callback
+    Assert.Single(console.Messages);
+    Assert.Equal("The weather in Berlin on 24.03.2020 will be Sunny at 24°C", console.Messages.Single());
+}
+```
+
 You can get the full example [here](src/Samples/JsonOverHttp/Impact.Samples.JsonOverHttp.Consumer.Tests).
 
 ## Implementing a provider test
