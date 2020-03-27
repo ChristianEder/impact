@@ -68,3 +68,4 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: "dotnet nuget push **/*.nupkg -k ${{secrets.nuget_access_key}} -s https://api.nuget.org/v3/index.json --skip-duplicate"
       working-directory: src
+      continue-on-error: true
