@@ -1,0 +1,24 @@
+﻿<Project>
+  <PropertyGroup Condition=" $(MSBuildProjectDirectory.Contains('src\Impact')) ">
+    <Copyright>Copyright (c) Christian Eder</Copyright> 
+    <Authors>Christian Eder</Authors>
+    <Owners>Christian Eder</Owners>
+    <Version>1.0.1</Version>
+    <Title>.NET implementation of the "Consumer Driven Contract Testing" pattern as promoted by PACT</Title>
+    
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageProjectUrl>https://github.com/ChristianEder/impact</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <NeutralLanguage>en</NeutralLanguage>
+    
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by PACT (https://docs.pact.io/).</Description>
+
+    <PackageReleaseNotes>https://github.com/ChristianEder/impact/blob/master/changelog.md</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
+
+    <PackageTags>pact;consumer driven contract testing;api;rest;testing;json;protobuf</PackageTags>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

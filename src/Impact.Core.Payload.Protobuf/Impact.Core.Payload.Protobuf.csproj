@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
-    <Description>Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by PACT (https://docs.pact.io/).
+    <Description>
+      $(Description)
 
-Impact.Core.Payload.Protobuf adds support for Protobuf serialized payloads and can be used both from consumer and provider tests.</Description>
-    <PackageProjectUrl>https://github.com/ChristianEder/impact</PackageProjectUrl>
+      Impact.Core.Payload.Protobuf adds support for Protobuf serialized payloads and can be used both from consumer and provider tests.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +14,7 @@ Impact.Core.Payload.Protobuf adds support for Protobuf serialized payloads and c
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
     <ProjectReference Include="..\Impact.Core\Impact.Core.csproj" />
   </ItemGroup>
 

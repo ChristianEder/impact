@@ -1,10 +1,11 @@
-# Impact
+# <img src="src/nuget/icon.png" width="71" height="71"/> Impact
 
 ![Build, Test And Deploy Impact](https://github.com/ChristianEder/impact/workflows/Build,%20Test%20And%20Deploy%20Impact/badge.svg)
 
-Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by [PACT](https://docs.pact.io/). 
+Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by [PACT](https://docs.pact.io/).
 
 Consumer driven contract testing is all about providing means to test the communication between the consumer of an API and the provider of an API in a decoupled way. As a rule of thumb, consumer driven contract testing might be the right tool for you, if you
+
 - Have different teams, or even organizations, working on the consumer and provider of an API
 - Feel the need to create a mock implementation of the API to support the development and testing process of the consuming application
 
@@ -31,7 +32,7 @@ The concept of consumer drive contract testing involves two parties to add a spe
   - Tests the consuming application against this mocked API
   - Publishes these expectations in the form a PACT file like [this](https://github.com/DiUS/pactjs0/blob/master/test/unit/sample-pact.json) to some shared repository (e.g. a [Pact broker](https://docs.pact.io/getting_started/sharing_pacts) instance)
   - An example for a consumer test can be found [here](src/Samples/JsonOverHttp/Impact.Samples.JsonOverHttp.Consumer.Tests/PrintWeatherForecastUseCaseTest.cs)
-- The provider of an API implements a test that  
+- The provider of an API implements a test that
   - loads the published expectations of the consumer encoded in the PACT file
   - Replays the requests encoded in the file against its API implementation
   - Compares the actual responses to the expected responses encoded in the file
@@ -46,9 +47,9 @@ You will have to start by defining the consumers expectations in terms of which 
 
 ```cs
 var pact = new Pact();
-// Define a new expected interactio for requesting the weather forecast data. 
+// Define a new expected interactio for requesting the weather forecast data.
 // Our example API only has this one endpoint. In a real world
-// scenario, you'll most likely have multiple definitions like the following. 
+// scenario, you'll most likely have multiple definitions like the following.
 pact.Given("")
     .UponReceiving("A weather forecast request")
     // Define an example request the consumer will be sending
@@ -59,7 +60,7 @@ pact.Given("")
     })
     // If your test cases that will be run later will send
     // Requests that do not exactly match the provided example
-    // request, you can use request matching rules to 
+    // request, you can use request matching rules to
     // further define the generalized shape of your request
     .WithRequestMatchingRule(r => r.Path, r => r.Regex(pathFormat.ToString()))
     // Define how you expect the API to respond to the given request
@@ -92,7 +93,7 @@ pact.Given("")
 Now, you'll need to start a mock API server that you can use to test the consuming application against:
 
 ```cs
-// Create an new mock server, providing the Pact 
+// Create an new mock server, providing the Pact
 // that contains all the expected requests and responses,
 // and the payload format
 var server = new HttpMockServer(pact, new JsonPayloadFormat());
@@ -146,6 +147,7 @@ var transport = new HttpTransport(client, new JsonPayloadFormat());
 // - a callback used to prepare preconditions to be met for each expectation in the Pact file
 pact = new Pact(pactFileContents, transport, s => Task.CompletedTask);
 ```
+
 Next, you'll have to write a single test method using this Pact instance for validation:
 
 ```cs
@@ -159,18 +161,19 @@ public async Task HonourPact()
 
 You can get the full example [here](src/Samples/JsonOverHttp/Impact.Samples.JsonOverHttp.Provider.Tests).
 
-
 # Supported API transport types and serialization formats
 
 Impact comes with support for the following types of transport:
+
 - HTTP
 - Callback (in-process methods as the APIs to be tested)
 - You can add your own by implememting custom transport support. See the HTTP transport implementation for reference. You'll need to implement
   - Transport specific data models and matchers similar to [these](/src/Impact.Core.Transport.Http)
   - For the consumer side, transport specific serialization logic and a way to serve a mocked provider API like [here](src/Impact.Consumer.Transport.Http)
-  - For the provider side, transport specific deserialization logic and a way to send requests to an actual API like [here](src/Impact.Provider.Transport.Http) 
+  - For the provider side, transport specific deserialization logic and a way to send requests to an actual API like [here](src/Impact.Provider.Transport.Http)
 
 Impact comes with support for the following serialization formats:
+
 - JSON
 - Protobuf
 - You can add your own by implementing the [IPayloadFormat](src/Impact.Core/Serialization/IPayloadFormat.cs) interface. Examples can be found in the [JSON](src/Impact.Core.Payload.Json) and [Protobuf](src/Impact.Core.Payload.Protobuf) implementations.
@@ -178,4 +181,3 @@ Impact comes with support for the following serialization formats:
 # Should I use Impact or pact-net?
 
 Besides Impact, there is also the official .NET implementation provided by the PACT Foundation at [https://github.com/pact-foundation/pact-net](https://github.com/pact-foundation/pact-net). One of the major differences between Impact and the official pact-net package is that Impact offers the ability to add support for different types of transport (e.g. HTTP) and payload serialization (e.g. JSON or Protobuf), whereas the official implementation focuses on JSON over HTTP. If your scenario involves only JSON over HTTP APIs, you might be better off using the official package.
-

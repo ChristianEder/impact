@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
-    <Description>Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by PACT (https://docs.pact.io/).
+    <Description>
+      $(Description)
 
-Impact.Consumer.Transport.Http implements the capability to write consumer tests against APIs delivered via HTTP.</Description>
-    <PackageProjectUrl>https://github.com/ChristianEder/impact</PackageProjectUrl>
+      Impact.Consumer.Transport.Http implements the capability to write consumer tests against APIs delivered via HTTP.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
     <ProjectReference Include="..\Impact.Core.Transport.Http\Impact.Core.Transport.Http.csproj" />
     <ProjectReference Include="..\Impact.Consumer\Impact.Consumer.csproj" />
   </ItemGroup>

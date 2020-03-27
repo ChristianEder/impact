@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
-    <Description>Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by PACT (https://docs.pact.io/).
+    <Description>
+      $(Description)
 
-Impact.Provider implements the basic framework for implementing provider tests. You'll also need to add references to the appropriate transport and payload format packages.</Description>
-    <PackageProjectUrl>https://github.com/ChristianEder/impact</PackageProjectUrl>
+      Impact.Provider implements the basic framework for implementing provider tests. You'll also need to add references to the appropriate transport and payload format packages.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
     <ProjectReference Include="..\Impact.Core\Impact.Core.csproj" />
   </ItemGroup>
 
