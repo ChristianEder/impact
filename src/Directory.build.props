@@ -1,5 +1,8 @@
 ﻿<Project>
-  <PropertyGroup Condition=" $(MSBuildProjectDirectory.Contains('src\Impact')) ">
+  <PropertyGroup>
+    <IsPackageLibrary>$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), 'src[\/\\]Impact'))</IsPackageLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition=" $(IsPackageLibrary) ">
     <Copyright>Copyright (c) Christian Eder</Copyright> 
     <Authors>Christian Eder</Authors>
     <Owners>Christian Eder</Owners>
@@ -21,4 +24,8 @@
     <PackageTags>pact;consumer driven contract testing;api;rest;testing;json;protobuf</PackageTags>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup Condition=" $(IsPackageLibrary) ">
+    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>

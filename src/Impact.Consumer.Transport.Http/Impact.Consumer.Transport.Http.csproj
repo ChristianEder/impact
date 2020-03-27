@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
     <ProjectReference Include="..\Impact.Core.Transport.Http\Impact.Core.Transport.Http.csproj" />
     <ProjectReference Include="..\Impact.Consumer\Impact.Consumer.csproj" />
   </ItemGroup>

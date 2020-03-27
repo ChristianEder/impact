@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
     <ProjectReference Include="..\Impact.Core\Impact.Core.csproj" />
   </ItemGroup>
 
