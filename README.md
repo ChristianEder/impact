@@ -40,7 +40,7 @@ The concept of consumer drive contract testing involves two parties to add a spe
 
 ## Implementing a consumer test
 
-We'll look into writing a consumer test for an application consuming an API that uses JSON serialized payload over an HTTP connection. In our scenario, the API provides weather forecasts, and the consuming application prints those forecast to the console.
+We'll look into writing a consumer test for an application consuming an API that uses JSON serialized payload over an HTTP connection. In our scenario, the API provides weather forecasts, and the consuming application prints these forecasts to the console.
 
 You will have to start by defining the consumers expectations in terms of which requests it will send and what responses it expects to get from the API:
 
@@ -62,7 +62,7 @@ pact.Given("")
     // request, you can use request matching rules to 
     // further define the generalized shape of your request
     .WithRequestMatchingRule(r => r.Path, r => r.Regex(pathFormat.ToString()))
-    // Define how you expect the API to respond to the give request
+    // Define how you expect the API to respond to the given request
     // This callback will be used later when setting up
     // the mocked API server
     .WillRespondWith(request =>
@@ -94,7 +94,7 @@ Now, you'll need to start a mock API server that you can use to test the consumi
 ```cs
 // Create an new mock server, providing the Pact 
 // that contains all the expected requests and responses,
-// And the payload format
+// and the payload format
 var server = new HttpMockServer(pact, new JsonPayloadFormat());
 server.Start();
 ```
