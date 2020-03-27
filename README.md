@@ -2,6 +2,13 @@
 
 ![Build, Test And Deploy Impact](https://github.com/ChristianEder/impact/workflows/Build,%20Test%20And%20Deploy%20Impact/badge.svg)
 
+![Impact.Consumer](https://img.shields.io/nuget/v/Impact.Consumer.png "Latest nuget package for Impact.Consumer")](https://www.nuget.org/packages/Impact.Consumer/)
+![Impact.Consumer.Transport.Http](https://img.shields.io/nuget/v/Impact.Consumer.Transport.Http.png "Latest nuget package for Impact.Consumer.Transport.Http")](https://www.nuget.org/packages/Impact.Consumer.Transport.Http/)
+![Impact.Provider](https://img.shields.io/nuget/v/Impact.Provider.png "Latest nuget package for Impact.Provider")](https://www.nuget.org/packages/Impact.Provider/)
+![Impact.Provider.Transport.Http](https://img.shields.io/nuget/v/Impact.Provider.Transport.Http.png "Latest nuget package for Impact.Provider.Transport.Http")](https://www.nuget.org/packages/Impact.Provider.Transport.Http/)
+![Impact.Core.Payload.Json](https://img.shields.io/nuget/v/Impact.Core.Payload.Json.png "Latest nuget package for Impact.Core.Payload.Json")](https://www.nuget.org/packages/Impact.Core.Payload.Json/)
+![Impact.Core.Payload.Protobuf](https://img.shields.io/nuget/v/Impact.Core.Payload.Protobuf.png "Latest nuget package for Impact.Core.Payload.Protobuf")](https://www.nuget.org/packages/Impact.Core.Payload.Protobuf/)
+
 Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by [PACT](https://docs.pact.io/). 
 
 Consumer driven contract testing is all about providing means to test the communication between the consumer of an API and the provider of an API in a decoupled way. As a rule of thumb, consumer driven contract testing might be the right tool for you, if you
