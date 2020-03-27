@@ -18,14 +18,7 @@ namespace Impact.Samples.ProtobufOverHttp.Consumer
 		public async Task<WeatherForecast> Get(string city, int days)
 		{
 			var stream = await httpClient.GetStreamAsync("/weatherforecast/" + city + "/" + days);
-			try
-			{
-				return WeatherForecast.Parser.ParseFrom(stream);
-			}
-			catch(Exception ex)
-			{
-				throw;
-			}
+			return WeatherForecast.Parser.ParseFrom(stream);
 		}
 	}
 }

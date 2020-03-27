@@ -16,10 +16,7 @@ namespace Impact.Provider.Tests
 
 		private void GivenAPact(Func<Request, Response> responder)
 		{
-			var transport = new CallbackTransport(new NoTransportFormat(new JsonPayloadFormat()), async request =>
-			{
-				return responder(JsonConvert.DeserializeObject<Request>(request.ToString()));
-			});
+			var transport = new CallbackTransport(new NoTransportFormat(new JsonPayloadFormat()), request => Task.FromResult((object)responder(JsonConvert.DeserializeObject<Request>(request.ToString()))));
 			pact = new Pact(PublishedPact.Get(), transport, s => Task.CompletedTask);
 		}
 
