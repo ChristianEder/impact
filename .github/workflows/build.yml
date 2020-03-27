@@ -66,5 +66,5 @@ jobs:
       working-directory: src/Impact.Provider.Transport.Http
     - name: "Publish packages"
       if: github.ref == 'refs/heads/master'
-      run: "dotnet nuget push *.nupkg -k ${{secrets.nuget_access_key}} -s https://api.nuget.org/v3/index.json"
+      run: "dotnet nuget push **/*.nupkg -k ${{secrets.nuget_access_key}} -s https://api.nuget.org/v3/index.json"
       working-directory: src
