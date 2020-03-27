@@ -64,3 +64,7 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: dotnet pack --configuration Release --no-restore
       working-directory: src/Impact.Provider.Transport.Http
+    - name: "Publish packages"
+      if: github.ref == 'refs/heads/master'
+      run: "dotnet nuget push *.nupkg -k ${{secrets.nuget_access_key}}"
+      working-directory: src
