@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Description>Impact is a .NET libary that implements the "Consumer Driven Contract Testing" pattern as promoted by PACT (https://docs.pact.io/).
+
+Impact.Core.Payload.Json adds support for JSON serialized payloads and can be used both from consumer and provider tests.</Description>
+    <PackageProjectUrl>https://github.com/ChristianEder/impact</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -32,3 +32,35 @@ jobs:
     - name: Test Impact.Consumer.Tests
       run: dotnet test --no-restore --verbosity normal
       working-directory: src/Tests/Impact.Consumer.Tests
+    - name: "Package Impact.Core"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Core
+    - name: "Package Impact.Core.Payload.Json"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Core.Payload.Json
+    - name: "Package Impact.Core.Payload.Protobuf"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Core.Payload.Protobuf
+    - name: "Package Impact.Core.Transport.Http"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Core.Transport.Http
+    - name: "Package Impact.Consumer"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Consumer
+    - name: "Package Impact.Consumer.Transport.Http"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Consumer.Transport.Http
+    - name: "Package Impact.Provider"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Provider
+    - name: "Package Impact.Provider.Transport.Http"
+      if: github.ref == 'refs/heads/master'
+      run: dotnet pack --configuration Release --no-restore
+      working-directory: src/Impact.Provider.Transport.Http
