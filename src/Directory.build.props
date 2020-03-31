@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <IsPackageLibrary>$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), 'src[\/\\]Impact'))</IsPackageLibrary>
+    <IsPackageLibrary>$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), `src[\/\\]Impact`))</IsPackageLibrary>
   </PropertyGroup>
   <PropertyGroup Condition=" $(IsPackageLibrary) ">
     <Copyright>Copyright (c) Christian Eder</Copyright> 
