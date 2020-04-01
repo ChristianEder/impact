@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <IsPackable Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), `src[\/\\]Impact`)) ">true</IsPackable>
+    <IsPackable Condition=" $(MSBuildProjectDirectory.Contains('src\Impact')) ">true</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition=" $(IsPackable) ">
     <Copyright>Copyright (c) Christian Eder</Copyright> 
