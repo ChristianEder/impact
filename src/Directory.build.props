@@ -1,12 +1,13 @@
 ﻿<Project>
   <PropertyGroup>
-    <IsPackageLibrary>$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), `src[\/\\]Impact`))</IsPackageLibrary>
+    <IsPackable>false</IsPackable>
+    <IsPackable Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), `src[\/\\]Impact`)) ">true</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition=" $(IsPackageLibrary) ">
+  <PropertyGroup Condition=" $(IsPackable) ">
     <Copyright>Copyright (c) Christian Eder</Copyright> 
     <Authors>Christian Eder</Authors>
     <Owners>Christian Eder</Owners>
-    <Version>1.0cd...2</Version>
+    <Version>1.0.2</Version>
     <Title>.NET implementation of the "Consumer Driven Contract Testing" pattern as promoted by PACT</Title>
     
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -25,7 +26,7 @@
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition=" $(IsPackageLibrary) ">
+  <ItemGroup Condition=" $(IsPackable) ">
     <None Include="..\nuget\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
