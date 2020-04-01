@@ -1,12 +1,12 @@
 ﻿<Project>
   <PropertyGroup>
-    <IsPackageLibrary>$(MSBuildProjectDirectory.Contains('src\Impact'))</IsPackageLibrary>
+    <IsPackageLibrary>$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectDirectory), `src[\/\\]Impact`))</IsPackageLibrary>
   </PropertyGroup>
   <PropertyGroup Condition=" $(IsPackageLibrary) ">
     <Copyright>Copyright (c) Christian Eder</Copyright> 
     <Authors>Christian Eder</Authors>
     <Owners>Christian Eder</Owners>
-    <Version>1.0.2</Version>
+    <Version>1.0cd...2</Version>
     <Title>.NET implementation of the "Consumer Driven Contract Testing" pattern as promoted by PACT</Title>
     
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
