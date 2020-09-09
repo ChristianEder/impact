@@ -56,6 +56,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.build.props = Directory.build.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProviderMockAsAzureFunction", "ProviderMockAsAzureFunction", "{6981D3A8-107F-406E-BC34-029671410ECD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impact.Samples.ProviderMockAsAzureFunction", "Samples\Impact.Samples.ProviderMockAsAzureFunction\Impact.Samples.ProviderMockAsAzureFunction.csproj", "{C8CA62F5-22CC-4749-A3A1-D5F5052FC119}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,6 +146,10 @@ Global
 		{729C9570-052D-48E4-A259-21651709C0FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{729C9570-052D-48E4-A259-21651709C0FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{729C9570-052D-48E4-A259-21651709C0FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8CA62F5-22CC-4749-A3A1-D5F5052FC119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8CA62F5-22CC-4749-A3A1-D5F5052FC119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8CA62F5-22CC-4749-A3A1-D5F5052FC119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8CA62F5-22CC-4749-A3A1-D5F5052FC119}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,6 +169,8 @@ Global
 		{7D07AF3F-98E2-44B8-93FC-996318A4B181} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
 		{77B6256E-7365-41D2-9233-A2A50897B5A6} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
 		{729C9570-052D-48E4-A259-21651709C0FB} = {CB5234FA-795F-4A09-B091-88E32E830E6A}
+		{6981D3A8-107F-406E-BC34-029671410ECD} = {CCCE313E-F7E3-48B6-A9AB-F2E57F3822FF}
+		{C8CA62F5-22CC-4749-A3A1-D5F5052FC119} = {6981D3A8-107F-406E-BC34-029671410ECD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {31B0589A-E8A9-4614-AD95-AF66850E9BA2}
